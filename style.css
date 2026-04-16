@@ -165,102 +165,94 @@ nav {
 /* Preview window */
 
 .preview {
-  max-width: 780px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 0 24px 80px;
-}
-
-.preview-window {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--bg-card);
   animation: fadeUp 0.8s ease both;
   animation-delay: 0.2s;
 }
 
-.window-bar {
-  padding: 12px 16px;
-  display: flex;
-  gap: 7px;
-  border-bottom: 1px solid var(--border);
-}
-
-.dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: #333;
-}
-
-.window-body {
-  padding: 32px;
-}
-
-.mock-slide {
-  background: #fff;
-  border-radius: 6px;
-  padding: 28px 32px;
-  color: #111;
-  aspect-ratio: 16 / 9;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 16px;
-}
-
-.mock-title {
-  font-size: clamp(1rem, 2.5vw, 1.6rem);
-  font-weight: 700;
-}
-
-.mock-math {
-  font-size: clamp(0.85rem, 2vw, 1.2rem);
-  font-style: italic;
-  color: #333;
-}
-
-.math-accent {
-  color: var(--accent);
-  font-weight: 700;
-}
-
-.mock-demo {
-  flex: 1;
-  min-height: 0;
-  border: 2px dashed #ccc;
-  border-radius: 6px;
+.slide-carousel {
   position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.slide-frame {
+  min-width: 100%;
+  position: relative;
+}
+
+.slide-frame iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  display: block;
+  pointer-events: none;
+}
+
+.slide-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.carousel-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--border);
 }
 
-.mock-demo-label {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #aaa;
+.carousel-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
 }
 
-.mock-graph svg {
-  width: 100%;
-  max-width: 220px;
-  height: auto;
+.carousel-btn:hover {
+  color: #fff;
+  border-color: #555;
 }
 
-.mock-graph circle {
-  animation: pulse 3s ease-in-out infinite alternate;
+.carousel-dots {
+  display: flex;
+  gap: 6px;
 }
 
-.mock-graph circle:nth-child(7) { animation-delay: 0.3s; }
-.mock-graph circle:nth-child(8) { animation-delay: 0.6s; }
-.mock-graph circle:nth-child(9) { animation-delay: 0.9s; }
-.mock-graph circle:nth-child(10) { animation-delay: 1.2s; }
+.dot-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dot-indicator.active {
+  background: var(--accent);
+}
 
 /* Features */
 
@@ -396,7 +388,4 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 
-  .mock-slide {
-    padding: 16px 20px;
-  }
 }

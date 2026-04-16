@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Finite Element Analysis — Cantilever Beam</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+}
+.title { font-size: 36px; font-weight: 700; color: #1a1a2e; text-align: center; margin-top: 18px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; text-align: center; margin-top: 4px; }
+canvas { display: block; margin: 8px auto 0; }
+</style>
+</head>
+<body>
+<div class="title">Finite Element Analysis — Cantilever Beam</div>
+<div class="subtitle">Von Mises stress distribution under applied load with exaggerated deformation</div>
+<canvas id="c" width="920" height="450"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// I-beam cross section profile (cantilever beam)
+// Build mesh nodes for an I-beam shape
+const beamLeft = 100, beamRight = 750;
+const beamCenterY = 210;
+const flangeH = 22, webH = 80, flangeW_full = 1, webW = 0.3;
+const beamLength = beamRight - beamLeft;
+
+// Create structured mesh
+const nx = 30, nyFlange = 3, nyWeb = 8;
+const nodes = [];
+const triangles = [];
+
+// Helper: add a rectangular block of nodes and triangulate
+function addBlock(x0, y0, x1, y1, nxi, nyi, nodeOffset) {
+  const blockNodes = [];
+  for (let j = 0; j <= nyi; j++) {
+    for (let i = 0; i <= nxi; i++) {
+      const x = x0 + (x1 - x0) * i / nxi;
+      const y = y0 + (y1 - y0) * j / nyi;
+      blockNodes.push(nodes.length);
+      nodes.push({ x, y, ox: x, oy: y });
+    }
+  }
+  for (let j = 0; j < nyi; j++) {
+    for (let i = 0; i < nxi; i++) {
+      const a = blockNodes[j * (nxi + 1) + i];
+      const b = blockNodes[j * (nxi + 1) + i + 1];
+      const c = blockNodes[(j + 1) * (nxi + 1) + i];
+      const d = blockNodes[(j + 1) * (nxi + 1) + i + 1];
+      triangles.push([a, b, c]);
+      triangles.push([b, d, c]);
+    }
+  }
+  return blockNodes;
+}
+
+// Top flange
+addBlock(beamLeft, beamCenterY - webH/2 - flangeH, beamRight, beamCenterY - webH/2, nx, nyFlange);
+// Web
+addBlock(beamLeft, beamCenterY - webH/2, beamRight, beamCenterY + webH/2, nx, nyWeb);
+// Bottom flange
+addBlock(beamLeft, beamCenterY + webH/2, beamRight, beamCenterY + webH/2 + flangeH, nx, nyFlange);
+
+// Compute analytical-ish stress and deformation for cantilever
+function computeDeformation(t) {
+  const animT = (Math.sin(t * 0.8) * 0.5 + 0.5); // oscillate 0-1
+  const loadScale = animT * 1.0;
+
+  for (const n of nodes) {
+    const xRatio = (n.ox - beamLeft) / beamLength; // 0 at fixed end, 1 at free end
+    const yOff = n.oy - beamCenterY;
+    const yNorm = yOff / (webH / 2 + flangeH);
+
+    // Deflection: cubic for cantilever beam
+    const deflection = loadScale * 60 * (3 * xRatio * xRatio - xRatio * xRatio * xRatio) / 2;
+    // Rotation
+    const slope = loadScale * 60 * (6 * xRatio - 3 * xRatio * xRatio) / (2 * beamLength) * 0.3;
+
+    n.x = n.ox - yOff * slope * 0.5;
+    n.y = n.oy + deflection;
+
+    // Von Mises stress (simplified): high at fixed end top/bottom, low in middle
+    // Bending stress ~ y * (L - x)
+    const bendingStress = Math.abs(yNorm) * (1 - xRatio) * loadScale;
+    // Shear stress ~ in web near neutral axis
+    const inWeb = Math.abs(yOff) < webH / 2 ? 1 : 0;
+    const shearStress = inWeb * (1 - Math.abs(yNorm)) * (1 - xRatio) * 0.3 * loadScale;
+    n.stress = Math.sqrt(bendingStress * bendingStress + 3 * shearStress * shearStress);
+  }
+}
+
+function stressColor(s) {
+  s = Math.max(0, Math.min(1, s));
+  // Blue -> cyan -> yellow -> red
+  let r, g, b;
+  if (s < 0.25) {
+    const t = s / 0.25;
+    r = 0; g = Math.round(100 * t); b = Math.round(180 + 75 * t);
+  } else if (s < 0.5) {
+    const t = (s - 0.25) / 0.25;
+    r = 0; g = Math.round(100 + 155 * t); b = Math.round(255 - 155 * t);
+  } else if (s < 0.75) {
+    const t = (s - 0.5) / 0.25;
+    r = Math.round(255 * t); g = 255; b = Math.round(100 - 100 * t);
+  } else {
+    const t = (s - 0.75) / 0.25;
+    r = 255; g = Math.round(255 - 200 * t); b = 0;
+  }
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawColorbar() {
+  const x = 810, y = 80, w = 18, h = 200;
+  for (let i = 0; i < h; i++) {
+    const s = 1 - i / h;
+    ctx.fillStyle = stressColor(s);
+    ctx.fillRect(x, y + i, w, 2);
+  }
+  ctx.strokeStyle = '#666';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x, y, w, h);
+  ctx.font = '12px PT Sans';
+  ctx.fillStyle = '#555';
+  ctx.textAlign = 'left';
+  ctx.fillText('High σ', x + 24, y + 8);
+  ctx.fillText('Low σ', x + 24, y + h);
+  ctx.font = '13px PT Sans';
+  ctx.fillText('Von Mises', x - 8, y - 10);
+  ctx.fillText('Stress', x + 2, y - 10 + 15);
+}
+
+function drawFixedSupport() {
+  const x = beamLeft;
+  const y0 = beamCenterY - webH / 2 - flangeH - 10;
+  const y1 = beamCenterY + webH / 2 + flangeH + 10;
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x, y0); ctx.lineTo(x, y1);
+  ctx.stroke();
+  // Hatching
+  ctx.lineWidth = 1.5;
+  for (let y = y0; y < y1; y += 10) {
+    ctx.beginPath();
+    ctx.moveTo(x, y); ctx.lineTo(x - 12, y + 10);
+    ctx.stroke();
+  }
+}
+
+function drawLoadArrow(t) {
+  const animT = (Math.sin(t * 0.8) * 0.5 + 0.5);
+  const tipY = nodes.reduce((best, n) => {
+    if (Math.abs(n.ox - beamRight) < 2 && Math.abs(n.oy - beamCenterY) < 5) return n;
+    return best;
+  }, nodes[0]);
+
+  const ax = beamRight + 30, ay = tipY.y - 40;
+  ctx.strokeStyle = '#c0392b';
+  ctx.fillStyle = '#c0392b';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(ax, ay); ctx.lineTo(ax, ay + 50);
+  ctx.stroke();
+  // Arrowhead
+  ctx.beginPath();
+  ctx.moveTo(ax, ay + 55);
+  ctx.lineTo(ax - 7, ay + 43);
+  ctx.lineTo(ax + 7, ay + 43);
+  ctx.closePath();
+  ctx.fill();
+  ctx.font = 'bold 14px PT Sans';
+  ctx.textAlign = 'center';
+  ctx.fillText('F', ax, ay - 6);
+  ctx.font = '12px PT Sans';
+  ctx.fillStyle = '#888';
+  ctx.fillText(`${(animT * 100).toFixed(0)}%`, ax, ay - 20);
+}
+
+let time = 0;
+function draw() {
+  ctx.clearRect(0, 0, 920, 450);
+  time += 0.016;
+  computeDeformation(time);
+
+  // Draw triangles
+  for (const tri of triangles) {
+    const [a, b, c] = tri;
+    const na = nodes[a], nb = nodes[b], nc = nodes[c];
+    const avgStress = (na.stress + nb.stress + nc.stress) / 3;
+
+    ctx.beginPath();
+    ctx.moveTo(na.x, na.y);
+    ctx.lineTo(nb.x, nb.y);
+    ctx.lineTo(nc.x, nc.y);
+    ctx.closePath();
+    ctx.fillStyle = stressColor(avgStress);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  drawFixedSupport();
+  drawLoadArrow(time);
+  drawColorbar();
+
+  // Equation
+  ctx.font = '16px PT Sans';
+  ctx.fillStyle = '#555';
+  ctx.textAlign = 'center';
+  ctx.fillText('σᵥₘ = √(σ₁² − σ₁σ₂ + σ₂²)        Ku = F', 420, 420);
+  ctx.font = '13px PT Sans';
+  ctx.fillStyle = '#999';
+  ctx.fillText('K: stiffness matrix    u: displacement vector    F: force vector', 420, 440);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

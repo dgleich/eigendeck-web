@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Gradient Descent — Convex Optimization</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+  display: flex; flex-direction: column; padding: 24px 32px;
+}
+h1 { font-size: 36px; font-weight: 700; color: #222; margin-bottom: 4px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; margin-bottom: 12px; }
+.content { flex: 1; display: flex; gap: 24px; }
+canvas { border: 1px solid #e5e7eb; border-radius: 4px; }
+.sidebar { width: 240px; font-size: 14px; color: #444; line-height: 1.8; }
+.stat { margin-bottom: 2px; }
+.stat strong { color: #333; }
+.equations { margin-top: 10px; font-size: 13px; color: #444; line-height: 2; }
+.controls { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.slider-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.slider-row input[type=range] { width: 110px; }
+.lr-val { font-weight: 700; color: #2563eb; width: 40px; }
+button {
+  font-family: 'PT Sans', sans-serif; font-size: 14px;
+  padding: 6px 16px; border: 1px solid #d1d5db; border-radius: 4px;
+  background: #f9fafb; cursor: pointer; color: #333;
+}
+button:hover { background: #e5e7eb; }
+</style>
+</head>
+<body>
+<h1>Gradient Descent — Convex Optimization</h1>
+<p class="subtitle">Steepest descent on f(x,y) = x² + 3y², an elliptical bowl</p>
+<div class="content">
+  <canvas id="cv" width="660" height="420"></canvas>
+  <div class="sidebar">
+    <div class="equations">
+      <strong>Objective:</strong><br>
+      f(x,y) = x² + 3y²<br><br>
+      <strong>Gradient:</strong><br>
+      ∇f = (2x, 6y)<br><br>
+      <strong>Update rule:</strong><br>
+      x ← x − α · ∇f(x)
+    </div>
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:12px 0;">
+    <div class="stat"><strong>Step:</strong> <span id="stepN">0</span></div>
+    <div class="stat"><strong>Position:</strong> (<span id="posX">—</span>, <span id="posY">—</span>)</div>
+    <div class="stat"><strong>f(x,y):</strong> <span id="fVal">—</span></div>
+    <div class="stat"><strong>‖∇f‖:</strong> <span id="gradNorm">—</span></div>
+    <div class="controls">
+      <div class="slider-row">
+        <span>α =</span>
+        <input type="range" id="lrSlider" min="1" max="30" value="12">
+        <span class="lr-val" id="lrVal">0.12</span>
+      </div>
+      <button id="btnRestart">Restart</button>
+    </div>
+  </div>
+</div>
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const CX = W/2, CY = H/2;
+// Map: [-4,4] x [-3,3] -> canvas
+const SX = W/8, SY = H/6;
+
+function toScreen(x, y) { return [CX + x*SX, CY - y*SY]; }
+function f(x, y) { return x*x + 3*y*y; }
+function grad(x, y) { return [2*x, 6*y]; }
+
+let lr = 0.12, path = [], animStep = 0, animTimer = null;
+const startX = 3.5, startY = 2.5;
+
+// Precompute contour data
+function drawContours() {
+  // Draw filled contours using imageData for smooth look
+  const imgData = ctx.createImageData(W, H);
+  const maxF = 50;
+  for (let py = 0; py < H; py++) {
+    for (let px = 0; px < W; px++) {
+      const x = (px - CX) / SX, y = (CY - py) / SY;
+      const v = f(x, y);
+      const t = Math.min(v / maxF, 1);
+      // Color: white at 0 -> light blue at high
+      const idx = (py * W + px) * 4;
+      imgData.data[idx]   = Math.round(255 - t * 40);
+      imgData.data[idx+1] = Math.round(255 - t * 50);
+      imgData.data[idx+2] = Math.round(255 - t * 10);
+      imgData.data[idx+3] = 255;
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  // Contour lines
+  const levels = [0.5, 1, 2, 4, 8, 12, 18, 25, 35, 48];
+  ctx.lineWidth = 1;
+  for (const level of levels) {
+    ctx.strokeStyle = level < 5 ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.25)';
+    ctx.beginPath();
+    // Ellipse: x^2 + 3y^2 = level => x = sqrt(level)*cos, y = sqrt(level/3)*sin
+    const a = Math.sqrt(level), b = Math.sqrt(level/3);
+    for (let i = 0; i <= 200; i++) {
+      const angle = (i/200)*Math.PI*2;
+      const [sx, sy] = toScreen(a*Math.cos(angle), b*Math.sin(angle));
+      if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+    }
+    ctx.stroke();
+    // label
+    if (level <= 25) {
+      const [lx, ly] = toScreen(a, 0);
+      ctx.font = '10px PT Sans'; ctx.fillStyle = 'rgba(59,130,246,0.6)';
+      ctx.fillText(level.toString(), lx+2, ly-2);
+    }
+  }
+
+  // Axes
+  ctx.strokeStyle = '#d1d5db'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, CY); ctx.lineTo(W, CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX, 0); ctx.lineTo(CX, H); ctx.stroke();
+  ctx.font = '12px PT Sans'; ctx.fillStyle = '#999';
+  ctx.fillText('x', W-14, CY-6);
+  ctx.fillText('y', CX+6, 14);
+}
+
+function computePath() {
+  path = [{ x: startX, y: startY }];
+  let x = startX, y = startY;
+  for (let i = 0; i < 80; i++) {
+    const [gx, gy] = grad(x, y);
+    x -= lr * gx;
+    y -= lr * gy;
+    path.push({ x, y });
+    if (f(x, y) < 1e-6) break;
+  }
+}
+
+function drawPath(upTo) {
+  if (upTo < 1) return;
+  // Trail dots
+  for (let i = 0; i <= Math.min(upTo, path.length-1); i++) {
+    const [sx, sy] = toScreen(path[i].x, path[i].y);
+    const r = i === Math.min(upTo, path.length-1) ? 5 : 3;
+    ctx.beginPath(); ctx.arc(sx, sy, r, 0, Math.PI*2);
+    if (i === Math.min(upTo, path.length-1)) {
+      ctx.fillStyle = '#dc2626';
+    } else {
+      ctx.fillStyle = `rgba(220,38,38,${0.3 + 0.5*(i/upTo)})`;
+    }
+    ctx.fill();
+  }
+  // Lines connecting dots
+  ctx.strokeStyle = 'rgba(220,38,38,0.5)'; ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let i = 0; i <= Math.min(upTo, path.length-1); i++) {
+    const [sx, sy] = toScreen(path[i].x, path[i].y);
+    if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+  }
+  ctx.stroke();
+
+  // Gradient arrow at current point
+  const cur = path[Math.min(upTo, path.length-1)];
+  const [gx, gy] = grad(cur.x, cur.y);
+  const gn = Math.sqrt(gx*gx+gy*gy);
+  if (gn > 0.05) {
+    const arrowLen = Math.min(gn * 0.3, 1.5);
+    const [sx, sy] = toScreen(cur.x, cur.y);
+    const [ex, ey] = toScreen(cur.x - (gx/gn)*arrowLen, cur.y - (gy/gn)*arrowLen);
+    ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+    // arrowhead
+    const a = Math.atan2(ey-sy, ex-sx), hl = 8;
+    ctx.fillStyle = '#16a34a';
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - hl*Math.cos(a-0.35), ey - hl*Math.sin(a-0.35));
+    ctx.lineTo(ex - hl*Math.cos(a+0.35), ey - hl*Math.sin(a+0.35));
+    ctx.closePath(); ctx.fill();
+    ctx.font = '12px PT Sans'; ctx.fillStyle = '#16a34a';
+    ctx.fillText('−∇f', ex+6, ey-4);
+  }
+
+  // Update stats
+  document.getElementById('stepN').textContent = Math.min(upTo, path.length-1);
+  document.getElementById('posX').textContent = cur.x.toFixed(3);
+  document.getElementById('posY').textContent = cur.y.toFixed(3);
+  document.getElementById('fVal').textContent = f(cur.x, cur.y).toFixed(4);
+  document.getElementById('gradNorm').textContent = (Math.sqrt(grad(cur.x,cur.y)[0]**2+grad(cur.x,cur.y)[1]**2)).toFixed(4);
+}
+
+function render() {
+  drawContours();
+  drawPath(animStep);
+}
+
+function startAnim() {
+  animStep = 0;
+  computePath();
+  if (animTimer) clearInterval(animTimer);
+  render();
+  animTimer = setInterval(() => {
+    if (animStep < path.length - 1) {
+      animStep++;
+      render();
+    } else {
+      clearInterval(animTimer); animTimer = null;
+    }
+  }, 200);
+}
+
+const lrSlider = document.getElementById('lrSlider');
+lrSlider.addEventListener('input', () => {
+  lr = lrSlider.value / 100;
+  document.getElementById('lrVal').textContent = lr.toFixed(2);
+  startAnim();
+});
+
+document.getElementById('btnRestart').onclick = startAnim;
+
+startAnim();
+</script>
+</body>
+</html>

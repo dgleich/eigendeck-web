@@ -34,35 +34,47 @@
   </section>
 
   <section class="preview">
-    <div class="preview-window">
-      <div class="window-bar">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    <div class="slide-carousel">
+      <div class="carousel-track" id="carousel">
+        <div class="slide-frame"><iframe src="slides/eigenvalues.html" loading="lazy"></iframe><div class="slide-label">Eigenvalue Decomposition</div></div>
+        <div class="slide-frame"><iframe src="slides/sequence-alignment.html" loading="lazy"></iframe><div class="slide-label">Sequence Alignment</div></div>
+        <div class="slide-frame"><iframe src="slides/molecule-viewer.html" loading="lazy"></iframe><div class="slide-label">Molecular Structure</div></div>
+        <div class="slide-frame"><iframe src="slides/graph-layout.html" loading="lazy"></iframe><div class="slide-label">Graph Drawing</div></div>
+        <div class="slide-frame"><iframe src="slides/gradient-descent.html" loading="lazy"></iframe><div class="slide-label">Gradient Descent</div></div>
+        <div class="slide-frame"><iframe src="slides/wave-equation.html" loading="lazy"></iframe><div class="slide-label">Wave Propagation</div></div>
+        <div class="slide-frame"><iframe src="slides/neural-network.html" loading="lazy"></iframe><div class="slide-label">Neural Network</div></div>
+        <div class="slide-frame"><iframe src="slides/protein-folding.html" loading="lazy"></iframe><div class="slide-label">Protein Structure</div></div>
+        <div class="slide-frame"><iframe src="slides/finite-element.html" loading="lazy"></iframe><div class="slide-label">Finite Element Analysis</div></div>
+        <div class="slide-frame"><iframe src="slides/signal-processing.html" loading="lazy"></iframe><div class="slide-label">Fourier Transform</div></div>
       </div>
-      <div class="window-body">
-        <div class="mock-slide">
-          <div class="mock-title">PageRank via Power Iteration</div>
-          <div class="mock-math">x<sub>k+1</sub> = <span class="math-accent">&alpha;</span> M x<sub>k</sub> + (1 &minus; <span class="math-accent">&alpha;</span>) v</div>
-          <div class="mock-demo">
-            <div class="mock-demo-label">interactive demo</div>
-            <div class="mock-graph">
-              <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                <line x1="40" y1="30" x2="100" y2="60" stroke="#555" stroke-width="1.5"/>
-                <line x1="100" y1="60" x2="160" y2="30" stroke="#555" stroke-width="1.5"/>
-                <line x1="100" y1="60" x2="80" y2="100" stroke="#555" stroke-width="1.5"/>
-                <line x1="100" y1="60" x2="140" y2="95" stroke="#555" stroke-width="1.5"/>
-                <line x1="40" y1="30" x2="80" y2="100" stroke="#555" stroke-width="1.5"/>
-                <line x1="160" y1="30" x2="140" y2="95" stroke="#555" stroke-width="1.5"/>
-                <circle cx="40" cy="30" r="8" fill="#4f8ff7"/>
-                <circle cx="100" cy="60" r="10" fill="#7b61ff"/>
-                <circle cx="160" cy="30" r="7" fill="#4f8ff7"/>
-                <circle cx="80" cy="100" r="6" fill="#3a7bd5"/>
-                <circle cx="140" cy="95" r="6" fill="#3a7bd5"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="prevBtn">&larr;</button>
+        <span class="carousel-dots" id="dots"></span>
+        <button class="carousel-btn" id="nextBtn">&rarr;</button>
       </div>
     </div>
+    <script>
+      const track = document.getElementById('carousel');
+      const frames = track.querySelectorAll('.slide-frame');
+      const dots = document.getElementById('dots');
+      let current = 0;
+      // Create dots
+      frames.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot-indicator' + (i === 0 ? ' active' : '');
+        dot.onclick = () => goTo(i);
+        dots.appendChild(dot);
+      });
+      function goTo(i) {
+        current = Math.max(0, Math.min(i, frames.length - 1));
+        track.style.transform = 'translateX(' + (-current * 100) + '%)';
+        dots.querySelectorAll('.dot-indicator').forEach((d, j) => d.classList.toggle('active', j === current));
+      }
+      document.getElementById('prevBtn').onclick = () => goTo(current - 1);
+      document.getElementById('nextBtn').onclick = () => goTo(current + 1);
+      // Auto-advance every 8 seconds
+      setInterval(() => goTo((current + 1) % frames.length), 8000);
+    </script>
   </section>
 
   <section id="features" class="features">

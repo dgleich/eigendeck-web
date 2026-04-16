@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Neural Network — Forward Propagation</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+}
+.title { font-size: 36px; font-weight: 700; color: #1a1a2e; text-align: center; margin-top: 18px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; text-align: center; margin-top: 4px; }
+canvas { display: block; margin: 8px auto 0; }
+</style>
+</head>
+<body>
+<div class="title">Neural Network — Forward Propagation</div>
+<div class="subtitle">Activation pulses traveling through a 4-layer feedforward network</div>
+<canvas id="c" width="920" height="450"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const layers = [4, 6, 6, 2];
+const layerLabels = ['Input', 'Hidden₁', 'Hidden₂', 'Output'];
+const layerX = [130, 340, 560, 770];
+const nodeRadius = 18;
+
+function getNodeY(layerIdx) {
+  const n = layers[layerIdx];
+  const totalH = (n - 1) * 58;
+  const startY = 200 - totalH / 2;
+  const ys = [];
+  for (let i = 0; i < n; i++) ys.push(startY + i * 58);
+  return ys;
+}
+
+// Pre-compute node positions
+const nodes = [];
+for (let l = 0; l < layers.length; l++) {
+  const ys = getNodeY(l);
+  nodes[l] = ys.map(y => ({ x: layerX[l], y }));
+}
+
+// Pre-compute edges
+const edges = [];
+for (let l = 0; l < layers.length - 1; l++) {
+  for (let i = 0; i < nodes[l].length; i++) {
+    for (let j = 0; j < nodes[l + 1].length; j++) {
+      edges.push({ from: nodes[l][i], to: nodes[l + 1][j], layer: l, weight: 0.3 + Math.random() * 0.7 });
+    }
+  }
+}
+
+// Activation state
+let activations = layers.map(n => new Float64Array(n));
+let pulses = []; // { fromX, fromY, toX, toY, progress, layer, weight }
+
+const cycleDuration = 4000; // ms per full forward pass cycle
+let startTime = performance.now();
+
+function sigmoid(x) { return 1 / (1 + Math.exp(-x)); }
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function draw(time) {
+  ctx.clearRect(0, 0, 920, 450);
+  const elapsed = (time - startTime) % (cycleDuration + 1000);
+  const phase = elapsed / cycleDuration;
+
+  // Reset activations
+  for (let l = 0; l < layers.length; l++)
+    for (let i = 0; i < layers[l]; i++) activations[l][i] = 0;
+
+  // Determine which layers are active
+  // Phase 0-0.2: input lights up
+  // Phase 0.2-0.45: layer 0->1 pulse
+  // Phase 0.45-0.7: layer 1->2 pulse
+  // Phase 0.7-0.95: layer 2->3 pulse
+  const inputValues = [0.9, 0.3, 0.7, 0.5];
+  const layerPhases = [0.2, 0.45, 0.7, 0.95];
+
+  // Input activation
+  if (phase > 0.05) {
+    const t = Math.min(1, (phase - 0.05) / 0.15);
+    for (let i = 0; i < layers[0]; i++) activations[0][i] = inputValues[i] * t;
+  }
+
+  // Propagate activations
+  for (let l = 0; l < 3; l++) {
+    const pStart = layerPhases[l];
+    const pEnd = layerPhases[l + 1] || 1;
+    if (phase > pStart) {
+      const t = Math.min(1, (phase - pStart) / (pEnd - pStart - 0.05));
+      for (let j = 0; j < layers[l + 1]; j++) {
+        let sum = 0;
+        for (let i = 0; i < layers[l]; i++) sum += activations[l][i] * (0.3 + ((i * 7 + j * 13) % 10) / 15);
+        activations[l + 1][j] = sigmoid(sum - 1) * t;
+      }
+    }
+  }
+
+  // Draw edges
+  for (const e of edges) {
+    const pStart = layerPhases[e.layer] || 0.2;
+    const pPrev = e.layer === 0 ? 0.2 : layerPhases[e.layer];
+    ctx.beginPath();
+    ctx.moveTo(e.from.x, e.from.y);
+    ctx.lineTo(e.to.x, e.to.y);
+    ctx.strokeStyle = 'rgba(180,190,210,0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Pulse along edge
+    if (phase > pPrev && phase < pStart + 0.15) {
+      const t = (phase - pPrev) / (pStart + 0.15 - pPrev);
+      if (t >= 0 && t <= 1) {
+        const px = lerp(e.from.x, e.to.x, t);
+        const py = lerp(e.from.y, e.to.y, t);
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, 8);
+        grad.addColorStop(0, `rgba(60,120,255,${0.6 * e.weight})`);
+        grad.addColorStop(1, 'rgba(60,120,255,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(px - 8, py - 8, 16, 16);
+      }
+    }
+  }
+
+  // Draw nodes
+  for (let l = 0; l < layers.length; l++) {
+    for (let i = 0; i < nodes[l].length; i++) {
+      const n = nodes[l][i];
+      const a = activations[l][i];
+      const blue = Math.round(80 + 175 * a);
+      const white = Math.round(255 * (1 - a * 0.6));
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, nodeRadius, 0, Math.PI * 2);
+      ctx.fillStyle = a > 0.01 ? `rgb(${white},${white},${Math.min(255, blue + 80)})` : '#f0f2f5';
+      ctx.fill();
+      ctx.strokeStyle = a > 0.3 ? `rgba(40,80,200,${0.4 + a * 0.6})` : '#bbb';
+      ctx.lineWidth = a > 0.3 ? 2.5 : 1.5;
+      ctx.stroke();
+
+      // Activation value
+      if (a > 0.01) {
+        ctx.fillStyle = a > 0.5 ? '#fff' : '#555';
+        ctx.font = '12px PT Sans';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(a.toFixed(2), n.x, n.y);
+      }
+    }
+  }
+
+  // Layer labels
+  ctx.font = '15px PT Sans';
+  ctx.fillStyle = '#666';
+  ctx.textAlign = 'center';
+  for (let l = 0; l < layers.length; l++) {
+    ctx.fillText(layerLabels[l], layerX[l], 420);
+  }
+
+  // Equation
+  ctx.font = 'italic 16px PT Sans';
+  ctx.fillStyle = '#999';
+  ctx.textAlign = 'center';
+  ctx.fillText('aˡ = σ(Wˡ · aˡ⁻¹ + bˡ)    where σ(x) = 1/(1 + e⁻ˣ)', 460, 445);
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Wave Propagation — 2D Membrane</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+}
+.title { font-size: 36px; font-weight: 700; color: #1a1a2e; text-align: center; margin-top: 18px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; text-align: center; margin-top: 4px; }
+canvas { display: block; margin: 8px auto 0; }
+.equation {
+  position: absolute; bottom: 16px; left: 0; right: 0; text-align: center;
+  font-size: 20px; color: #444;
+}
+</style>
+</head>
+<body>
+<div class="title">Wave Propagation — 2D Membrane</div>
+<div class="subtitle">2D wave equation with damping on a rectangular grid</div>
+<canvas id="c" width="900" height="420"></canvas>
+<div class="equation">∇²u = (1/c²)(∂²u/∂t²) &minus; γ(∂u/∂t)</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const N = 80;
+const dt = 0.4, c = 0.3, damping = 0.002;
+
+let u = [], uPrev = [], uNext = [];
+for (let i = 0; i <= N; i++) {
+  u[i] = new Float64Array(N + 1);
+  uPrev[i] = new Float64Array(N + 1);
+  uNext[i] = new Float64Array(N + 1);
+}
+
+// Gaussian pulse
+const cx = N / 2, cy = N / 2, sigma = 4;
+for (let i = 0; i <= N; i++)
+  for (let j = 0; j <= N; j++) {
+    const r2 = (i - cx) ** 2 + (j - cy) ** 2;
+    u[i][j] = Math.exp(-r2 / (2 * sigma * sigma));
+    uPrev[i][j] = u[i][j];
+  }
+
+function step() {
+  const c2dt2 = (c * dt) ** 2;
+  for (let i = 1; i < N; i++)
+    for (let j = 1; j < N; j++) {
+      const lap = u[i+1][j] + u[i-1][j] + u[i][j+1] + u[i][j-1] - 4 * u[i][j];
+      uNext[i][j] = 2 * u[i][j] - uPrev[i][j] + c2dt2 * lap - damping * (u[i][j] - uPrev[i][j]);
+    }
+  let tmp = uPrev; uPrev = u; u = uNext; uNext = tmp;
+}
+
+function heightToColor(h) {
+  const v = Math.max(-1, Math.min(1, h * 3));
+  if (v > 0) return [255, Math.round(255 * (1 - v)), Math.round(255 * (1 - v))];
+  if (v < 0) return [Math.round(255 * (1 + v)), Math.round(255 * (1 + v)), 255];
+  return [255, 255, 255];
+}
+
+function render() {
+  ctx.clearRect(0, 0, 900, 420);
+  const ox = 450, oy = 60;
+  const sx = 7.5, sy = 3.5, sz = 120;
+  const cosA = 0.92, sinA = 0.39;
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      const xi = i - N / 2, yj = j - N / 2;
+      const px = ox + xi * sx * cosA - yj * sx * sinA;
+      const py = oy + xi * sy * sinA + yj * sy * cosA - u[i][j] * sz;
+      const avgH = (u[i][j] + u[i+1][j] + u[i][j+1] + u[i+1][j+1]) / 4;
+      const [r, g, b] = heightToColor(avgH);
+
+      const xi1 = (i + 1) - N / 2, yj1 = (j + 1) - N / 2;
+      const p1x = ox + xi1 * sx * cosA - yj * sx * sinA;
+      const p1y = oy + xi1 * sy * sinA + yj * sy * cosA - u[i+1][j] * sz;
+      const p2x = ox + xi1 * sx * cosA - yj1 * sx * sinA;
+      const p2y = oy + xi1 * sy * sinA + yj1 * sy * cosA - u[i+1][j+1] * sz;
+      const p3x = ox + xi * sx * cosA - yj1 * sx * sinA;
+      const p3y = oy + xi * sy * sinA + yj1 * sy * cosA - u[i][j+1] * sz;
+
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.strokeStyle = `rgba(0,0,0,0.06)`;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(p1x, p1y);
+      ctx.lineTo(p2x, p2y);
+      ctx.lineTo(p3x, p3y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+}
+
+let frame = 0;
+function animate() {
+  // Re-excite occasionally
+  if (frame % 300 === 0 && frame > 0) {
+    const rx = 15 + Math.random() * (N - 30);
+    const ry = 15 + Math.random() * (N - 30);
+    for (let i = 0; i <= N; i++)
+      for (let j = 0; j <= N; j++) {
+        const r2 = (i - rx) ** 2 + (j - ry) ** 2;
+        u[i][j] += 0.8 * Math.exp(-r2 / (2 * 9));
+      }
+  }
+  for (let s = 0; s < 3; s++) step();
+  render();
+  frame++;
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

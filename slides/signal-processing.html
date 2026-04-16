@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Fourier Transform — Frequency Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+}
+.title { font-size: 36px; font-weight: 700; color: #1a1a2e; text-align: center; margin-top: 14px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; text-align: center; margin-top: 2px; }
+canvas { display: block; margin: 4px auto 0; }
+</style>
+</head>
+<body>
+<div class="title">Fourier Transform — Frequency Analysis</div>
+<div class="subtitle">Time-domain signal decomposition into frequency components</div>
+<canvas id="c" width="920" height="470"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const f1 = 5, f2 = 12, f3 = 28;
+const a1 = 1.0, a2 = 0.6, a3 = 0.35;
+const N = 512;
+const sampleRate = 128;
+
+const plotLeft = 80, plotRight = 870;
+const plotWidth = plotRight - plotLeft;
+const timeTop = 30, timeBottom = 195, timeH = timeBottom - timeTop;
+const freqTop = 230, freqBottom = 395, freqH = freqBottom - freqTop;
+
+let startTime = performance.now();
+const cycleDuration = 9000; // ms for full cycle
+
+function computeSignal(time) {
+  const elapsed = ((time - startTime) % cycleDuration) / cycleDuration;
+  // Phase: 0-0.3 = f1 only, 0.3-0.6 = f1+f2, 0.6-1.0 = f1+f2+f3
+  const blend2 = Math.max(0, Math.min(1, (elapsed - 0.25) / 0.1));
+  const blend3 = Math.max(0, Math.min(1, (elapsed - 0.55) / 0.1));
+
+  const signal = new Float64Array(N);
+  for (let i = 0; i < N; i++) {
+    const t = i / sampleRate;
+    signal[i] = a1 * Math.sin(2 * Math.PI * f1 * t)
+              + blend2 * a2 * Math.sin(2 * Math.PI * f2 * t)
+              + blend3 * a3 * Math.sin(2 * Math.PI * f3 * t);
+  }
+  return { signal, blend2, blend3 };
+}
+
+function computeFFT(signal) {
+  // Simple DFT for display (N is small enough)
+  const mag = new Float64Array(N / 2);
+  for (let k = 0; k < N / 2; k++) {
+    let re = 0, im = 0;
+    for (let n = 0; n < N; n++) {
+      const angle = -2 * Math.PI * k * n / N;
+      re += signal[n] * Math.cos(angle);
+      im += signal[n] * Math.sin(angle);
+    }
+    mag[k] = Math.sqrt(re * re + im * im) / N * 2;
+  }
+  return mag;
+}
+
+function drawAxes(top, bottom, label, isFreq) {
+  const h = bottom - top;
+  const midY = top + h / 2;
+
+  // Background
+  ctx.fillStyle = '#fafbfc';
+  ctx.fillRect(plotLeft, top, plotWidth, h);
+  ctx.strokeStyle = '#ddd';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(plotLeft, top, plotWidth, h);
+
+  // Grid lines
+  ctx.strokeStyle = '#eee';
+  ctx.setLineDash([4, 4]);
+  if (!isFreq) {
+    ctx.beginPath();
+    ctx.moveTo(plotLeft, midY); ctx.lineTo(plotRight, midY);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  // Label
+  ctx.save();
+  ctx.translate(20, top + h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.font = '14px PT Sans';
+  ctx.fillStyle = '#666';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, 0, 0);
+  ctx.restore();
+}
+
+function draw(time) {
+  ctx.clearRect(0, 0, 920, 470);
+  const { signal, blend2, blend3 } = computeSignal(time);
+  const mag = computeFFT(signal);
+
+  // Time domain
+  drawAxes(timeTop, timeBottom, 'Amplitude', false);
+  const midY = timeTop + timeH / 2;
+  const tScale = plotWidth / (N / sampleRate);
+  const aScale = timeH / 4.5;
+
+  // Draw individual components faintly
+  const components = [
+    { f: f1, a: a1, blend: 1, color: 'rgba(52,152,219,0.25)' },
+    { f: f2, a: a2, blend: blend2, color: 'rgba(46,204,113,0.25)' },
+    { f: f3, a: a3, blend: blend3, color: 'rgba(231,76,60,0.25)' },
+  ];
+  for (const comp of components) {
+    if (comp.blend < 0.01) continue;
+    ctx.beginPath();
+    ctx.strokeStyle = comp.color;
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < N; i++) {
+      const x = plotLeft + (i / sampleRate) * tScale;
+      const y = midY - comp.blend * comp.a * Math.sin(2 * Math.PI * comp.f * i / sampleRate) * aScale;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  // Draw composite signal
+  ctx.beginPath();
+  ctx.strokeStyle = '#2c3e50';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < N; i++) {
+    const x = plotLeft + (i / sampleRate) * tScale;
+    const y = midY - signal[i] * aScale;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Time axis label
+  ctx.font = '13px PT Sans';
+  ctx.fillStyle = '#888';
+  ctx.textAlign = 'center';
+  ctx.fillText('Time (s)', plotLeft + plotWidth / 2, timeBottom + 18);
+  // Tick marks
+  for (let t = 0; t <= 4; t++) {
+    const x = plotLeft + t * tScale;
+    ctx.fillText(t.toString(), x, timeBottom + 14);
+  }
+
+  // Frequency domain
+  drawAxes(freqTop, freqBottom, 'Magnitude', true);
+  const maxFreq = 45;
+  const fScale = plotWidth / maxFreq;
+  const mScale = freqH * 0.85;
+
+  // Draw frequency bars
+  const binWidth = sampleRate / N;
+  for (let k = 1; k < N / 2 && k * binWidth < maxFreq; k++) {
+    const freq = k * binWidth;
+    const x = plotLeft + freq * fScale;
+    const h = mag[k] * mScale;
+    if (h < 1) continue;
+
+    let color = '#95a5a6';
+    if (Math.abs(freq - f1) < 1) color = '#3498db';
+    else if (Math.abs(freq - f2) < 1) color = '#2ecc71';
+    else if (Math.abs(freq - f3) < 1) color = '#e74c3c';
+
+    ctx.fillStyle = color;
+    ctx.fillRect(x - 3, freqBottom - h, 6, h);
+  }
+
+  // Frequency axis
+  ctx.font = '13px PT Sans';
+  ctx.fillStyle = '#888';
+  ctx.textAlign = 'center';
+  ctx.fillText('Frequency (Hz)', plotLeft + plotWidth / 2, freqBottom + 18);
+  for (let f = 0; f <= 40; f += 5) {
+    const x = plotLeft + f * fScale;
+    ctx.fillText(f.toString(), x, freqBottom + 14);
+  }
+
+  // Peak labels
+  const peakInfos = [
+    { f: f1, label: `f₁ = ${f1} Hz`, color: '#3498db', active: true },
+    { f: f2, label: `f₂ = ${f2} Hz`, color: '#2ecc71', active: blend2 > 0.5 },
+    { f: f3, label: `f₃ = ${f3} Hz`, color: '#e74c3c', active: blend3 > 0.5 },
+  ];
+  for (const p of peakInfos) {
+    if (!p.active) continue;
+    const x = plotLeft + p.f * fScale;
+    const k = Math.round(p.f / binWidth);
+    const h = mag[k] * mScale;
+    ctx.font = 'bold 13px PT Sans';
+    ctx.fillStyle = p.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.label, x, freqBottom - h - 8);
+  }
+
+  // Component status indicators
+  ctx.font = '14px PT Sans';
+  ctx.textAlign = 'left';
+  const statusX = plotLeft + 10, statusY = timeTop + 18;
+  ctx.fillStyle = '#3498db';
+  ctx.fillText(`● f₁ = ${f1} Hz  (A = ${a1})`, statusX, statusY);
+  ctx.fillStyle = blend2 > 0.01 ? '#2ecc71' : '#ccc';
+  ctx.fillText(`● f₂ = ${f2} Hz  (A = ${a2})`, statusX + 200, statusY);
+  ctx.fillStyle = blend3 > 0.01 ? '#e74c3c' : '#ccc';
+  ctx.fillText(`● f₃ = ${f3} Hz  (A = ${a3})`, statusX + 400, statusY);
+
+  // Equation
+  ctx.font = '15px PT Sans';
+  ctx.fillStyle = '#555';
+  ctx.textAlign = 'center';
+  ctx.fillText('x(t) = Σ Aₖ sin(2πfₖt)          X(f) = ∫ x(t) e⁻²ᵖⁱᶠᵗ dt', 460, freqBottom + 40);
+
+  // Phase indicator
+  const elapsed = ((time - startTime) % cycleDuration) / cycleDuration;
+  ctx.font = '13px PT Sans';
+  ctx.fillStyle = '#aaa';
+  ctx.textAlign = 'right';
+  const phaseLabel = elapsed < 0.3 ? 'Single tone' : elapsed < 0.6 ? 'Two harmonics' : 'Three harmonics';
+  ctx.fillText(phaseLabel, plotRight, timeTop + 18);
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>

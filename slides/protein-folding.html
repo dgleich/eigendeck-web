@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Protein Secondary Structure</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+}
+.title { font-size: 36px; font-weight: 700; color: #1a1a2e; text-align: center; margin-top: 18px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; text-align: center; margin-top: 4px; }
+canvas { display: block; margin: 8px auto 0; }
+.legend {
+  position: absolute; bottom: 14px; left: 0; right: 0; text-align: center;
+  font-size: 15px; color: #666;
+}
+.legend span { margin: 0 16px; }
+.swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 5px; }
+</style>
+</head>
+<body>
+<div class="title">Protein Secondary Structure</div>
+<div class="subtitle">Alpha helix → coil → beta sheet backbone visualization</div>
+<canvas id="c" width="920" height="420"></canvas>
+<div class="legend">
+  <span><span class="swatch" style="background:#d63384"></span>α-Helix</span>
+  <span><span class="swatch" style="background:#999"></span>Coil</span>
+  <span><span class="swatch" style="background:#0d9dd6"></span>β-Sheet</span>
+  <span style="color:#aaa; font-style:italic; margin-left:30px;">φ, ψ dihedral angles define secondary structure</span>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const aminoAcids = ['Ala','Gly','Val','Leu','Ile','Pro','Glu','Asp','Lys','Arg',
+  'Ser','Thr','Asn','Gln','Met','Phe','Tyr','Trp','Cys','His'];
+
+// Build backbone: helix (0-11), coil (12-16), sheet (17-29)
+const numResidues = 30;
+const points3D = [];
+
+// Alpha helix: parametric helix
+for (let i = 0; i < 12; i++) {
+  const t = i / 11;
+  const angle = t * Math.PI * 4;
+  const r = 50;
+  points3D.push({
+    x: -200 + t * 120,
+    y: Math.cos(angle) * r,
+    z: Math.sin(angle) * r,
+    type: 'helix',
+    aa: aminoAcids[i % aminoAcids.length]
+  });
+}
+
+// Coil: smooth curve
+for (let i = 0; i < 5; i++) {
+  const t = i / 4;
+  points3D.push({
+    x: -80 + t * 100,
+    y: 30 * Math.sin(t * Math.PI * 1.5),
+    z: 20 * Math.cos(t * Math.PI),
+    type: 'coil',
+    aa: aminoAcids[(12 + i) % aminoAcids.length]
+  });
+}
+
+// Beta sheet: zigzag pleated pattern
+for (let i = 0; i < 13; i++) {
+  const t = i / 12;
+  points3D.push({
+    x: 20 + t * 200,
+    y: (i % 2 === 0 ? -20 : 20),
+    z: 10 * Math.sin(t * Math.PI * 0.5),
+    type: 'sheet',
+    aa: aminoAcids[(17 + i) % aminoAcids.length]
+  });
+}
+
+const typeColors = {
+  helix: { r: 214, g: 51, b: 132 },
+  coil: { r: 150, g: 150, b: 150 },
+  sheet: { r: 13, g: 157, b: 214 }
+};
+
+let angle = 0;
+
+function project(x, y, z, rotY) {
+  const cos = Math.cos(rotY), sin = Math.sin(rotY);
+  const rx = x * cos - z * sin;
+  const rz = x * sin + z * cos;
+  // slight tilt
+  const cosT = Math.cos(0.3), sinT = Math.sin(0.3);
+  const ry2 = y * cosT - rz * sinT;
+  const rz2 = y * sinT + rz * cosT;
+  const scale = 600 / (600 + rz2);
+  return { px: 460 + rx * scale, py: 200 + ry2 * scale, depth: rz2, scale };
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 920, 420);
+  angle += 0.008;
+
+  // Project all points
+  const projected = points3D.map((p, i) => {
+    const proj = project(p.x, p.y, p.z, angle);
+    return { ...proj, type: p.type, aa: p.aa, idx: i };
+  });
+
+  // Draw ribbon segments (back to front by depth)
+  // First draw connections
+  for (let i = 0; i < projected.length - 1; i++) {
+    const p0 = projected[i], p1 = projected[i + 1];
+    const col = typeColors[p0.type];
+    const avgDepth = (p0.depth + p1.depth) / 2;
+    const brightness = Math.max(0.4, Math.min(1, 1 - avgDepth / 400));
+
+    // Draw thick ribbon
+    const dx = p1.px - p0.px, dy = p1.py - p0.py;
+    const len = Math.sqrt(dx * dx + dy * dy) || 1;
+    const nx = -dy / len, ny = dx / len;
+    const ribbonWidth = p0.type === 'sheet' ? 14 : (p0.type === 'helix' ? 10 : 5);
+    const w = ribbonWidth * p0.scale;
+
+    ctx.beginPath();
+    ctx.moveTo(p0.px + nx * w, p0.py + ny * w);
+    ctx.lineTo(p1.px + nx * w, p1.py + ny * w);
+    ctx.lineTo(p1.px - nx * w, p1.py - ny * w);
+    ctx.lineTo(p0.px - nx * w, p0.py - ny * w);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${Math.round(col.r * brightness)},${Math.round(col.g * brightness)},${Math.round(col.b * brightness)},0.85)`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(${Math.round(col.r * brightness * 0.7)},${Math.round(col.g * brightness * 0.7)},${Math.round(col.b * brightness * 0.7)},0.5)`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Draw residue markers sorted by depth (back first)
+  const sorted = [...projected].sort((a, b) => b.depth - a.depth);
+  for (const p of sorted) {
+    const col = typeColors[p.type];
+    const brightness = Math.max(0.5, Math.min(1, 1 - p.depth / 400));
+    const r = 6 * p.scale;
+
+    ctx.beginPath();
+    ctx.arc(p.px, p.py, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgb(${Math.round(col.r * brightness)},${Math.round(col.g * brightness)},${Math.round(col.b * brightness)})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(255,255,255,0.7)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label every 3rd residue
+    if (p.idx % 3 === 0 && p.depth < 80) {
+      ctx.font = `${Math.round(11 * p.scale)}px PT Sans`;
+      ctx.fillStyle = `rgba(80,80,80,${Math.max(0.3, brightness)})`;
+      ctx.textAlign = 'center';
+      ctx.fillText(p.aa + (p.idx + 1), p.px, p.py - r - 4);
+    }
+  }
+
+  // Section labels
+  ctx.font = '13px PT Sans';
+  ctx.textAlign = 'center';
+  const helixCenter = project(-140, -70, 0, angle);
+  const coilCenter = project(-30, -60, 0, angle);
+  const sheetCenter = project(120, -50, 0, angle);
+  ctx.fillStyle = '#d63384';
+  ctx.fillText('α-helix', helixCenter.px, helixCenter.py);
+  ctx.fillStyle = '#999';
+  ctx.fillText('coil', coilCenter.px, coilCenter.py);
+  ctx.fillStyle = '#0d9dd6';
+  ctx.fillText('β-sheet', sheetCenter.px, sheetCenter.py);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

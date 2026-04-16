@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=960,height=540">
+<title>Force-Directed Graph Drawing</title>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 960px; height: 540px; overflow: hidden;
+  font-family: 'PT Sans', sans-serif; background: #fff;
+  display: flex; flex-direction: column; padding: 24px 32px;
+}
+h1 { font-size: 36px; font-weight: 700; color: #222; margin-bottom: 4px; }
+.subtitle { font-size: 18px; font-style: italic; color: #888; margin-bottom: 12px; }
+.content { flex: 1; display: flex; gap: 20px; }
+canvas { border: 1px solid #e5e7eb; border-radius: 4px; }
+.sidebar { width: 200px; font-size: 14px; color: #555; line-height: 1.7; }
+.stat { margin-bottom: 2px; }
+.stat strong { color: #333; }
+.equations { margin-top: 12px; font-size: 13px; color: #444; line-height: 1.8; }
+.controls { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+button {
+  font-family: 'PT Sans', sans-serif; font-size: 14px;
+  padding: 6px 16px; border: 1px solid #d1d5db; border-radius: 4px;
+  background: #f9fafb; cursor: pointer; color: #333;
+}
+button:hover { background: #e5e7eb; }
+.color-scale { margin-top: 12px; }
+.color-bar { width: 100%; height: 14px; border-radius: 3px; border: 1px solid #ddd; }
+.color-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+</style>
+</head>
+<body>
+<h1>Force-Directed Graph Drawing</h1>
+<p class="subtitle">Spring-electric model: attract along edges, repel all pairs</p>
+<div class="content">
+  <canvas id="cv" width="700" height="420"></canvas>
+  <div class="sidebar">
+    <div class="stat"><strong>Nodes:</strong> <span id="nNodes">20</span></div>
+    <div class="stat"><strong>Edges:</strong> <span id="nEdges">0</span></div>
+    <div class="stat"><strong>Energy:</strong> <span id="energy">—</span></div>
+    <div class="stat"><strong>Iteration:</strong> <span id="iter">0</span></div>
+    <div class="equations">
+      <strong>Forces:</strong><br>
+      F_repel = k² / d<br>
+      F_attract = d / k<br>
+      where k = C · √(area / |V|)<br>
+      <br>Temperature cools each step.
+    </div>
+    <div class="color-scale">
+      <strong style="font-size:13px;">Node degree:</strong>
+      <canvas id="colorBar" class="color-bar" width="180" height="14"></canvas>
+      <div class="color-labels"><span>Low (1)</span><span>High (6+)</span></div>
+    </div>
+    <div class="controls">
+      <button id="btnReset">Randomize & Restart</button>
+    </div>
+  </div>
+</div>
+<script>
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const N = 20, EDGE_PROB = 0.12;
+let nodes, edges, temp, iteration, maxDeg;
+
+function initGraph() {
+  nodes = [];
+  edges = [];
+  for (let i = 0; i < N; i++) {
+    nodes.push({ x: 80 + Math.random()*(W-160), y: 80 + Math.random()*(H-160), vx:0, vy:0, deg:0 });
+  }
+  // generate random edges (ensure connected-ish)
+  for (let i = 1; i < N; i++) {
+    const j = Math.floor(Math.random() * i);
+    edges.push([i, j]);
+  }
+  for (let i = 0; i < N; i++) {
+    for (let j = i+2; j < N; j++) {
+      if (Math.random() < EDGE_PROB) edges.push([i, j]);
+    }
+  }
+  // compute degree
+  nodes.forEach(n => n.deg = 0);
+  edges.forEach(([a,b]) => { nodes[a].deg++; nodes[b].deg++; });
+  maxDeg = Math.max(...nodes.map(n=>n.deg), 1);
+  temp = W / 4;
+  iteration = 0;
+  document.getElementById('nEdges').textContent = edges.length;
+}
+
+const k = 50; // ideal spring length
+
+function step() {
+  // repulsive forces
+  for (let i = 0; i < N; i++) { nodes[i].vx = 0; nodes[i].vy = 0; }
+  for (let i = 0; i < N; i++) {
+    for (let j = i+1; j < N; j++) {
+      let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+      let d = Math.sqrt(dx*dx + dy*dy) || 1;
+      let f = (k * k) / d;
+      let fx = (dx/d)*f, fy = (dy/d)*f;
+      nodes[i].vx += fx; nodes[i].vy += fy;
+      nodes[j].vx -= fx; nodes[j].vy -= fy;
+    }
+  }
+  // attractive forces
+  for (const [a,b] of edges) {
+    let dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+    let d = Math.sqrt(dx*dx + dy*dy) || 1;
+    let f = (d * d) / (k * 3);
+    let fx = (dx/d)*f, fy = (dy/d)*f;
+    nodes[a].vx -= fx; nodes[a].vy -= fy;
+    nodes[b].vx += fx; nodes[b].vy += fy;
+  }
+  // apply with temperature limit
+  let energy = 0;
+  for (let i = 0; i < N; i++) {
+    let d = Math.sqrt(nodes[i].vx**2 + nodes[i].vy**2) || 1;
+    let capped = Math.min(d, temp);
+    nodes[i].x += (nodes[i].vx/d) * capped;
+    nodes[i].y += (nodes[i].vy/d) * capped;
+    // keep in bounds
+    nodes[i].x = Math.max(30, Math.min(W-30, nodes[i].x));
+    nodes[i].y = Math.max(30, Math.min(H-30, nodes[i].y));
+    energy += d;
+  }
+  temp *= 0.97;
+  iteration++;
+  document.getElementById('energy').textContent = energy.toFixed(1);
+  document.getElementById('iter').textContent = iteration;
+}
+
+function degreeColor(deg) {
+  const t = Math.min(deg / 6, 1);
+  const r = Math.round(59 + t * (220-59));
+  const g = Math.round(130 + t * (50-130));
+  const b = Math.round(246 + t * (50-246));
+  return `rgb(${r},${g},${b})`;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  // edges
+  ctx.lineWidth = 1.2; ctx.strokeStyle = '#c4c9d4';
+  for (const [a,b] of edges) {
+    ctx.beginPath();
+    ctx.moveTo(nodes[a].x, nodes[a].y);
+    ctx.lineTo(nodes[b].x, nodes[b].y);
+    ctx.stroke();
+  }
+  // nodes
+  for (const n of nodes) {
+    const r = 6 + n.deg * 1.5;
+    ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI*2);
+    ctx.fillStyle = degreeColor(n.deg);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+}
+
+function loop() {
+  if (temp > 0.5) step();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// color bar
+const cbCv = document.getElementById('colorBar'), cbCtx = cbCv.getContext('2d');
+for (let x = 0; x < 180; x++) {
+  cbCtx.fillStyle = degreeColor(x/180*6);
+  cbCtx.fillRect(x, 0, 1, 14);
+}
+
+document.getElementById('btnReset').onclick = () => { initGraph(); temp = W/4; };
+initGraph();
+loop();
+</script>
+</body>
+</html>
