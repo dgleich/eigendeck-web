@@ -73,6 +73,14 @@ nav {
   font-weight: 700;
   font-size: 1.15rem;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  height: 28px;
+  width: auto;
 }
 
 .nav-links {
