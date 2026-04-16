@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eigendeck — The characteristic presentation tool</title>
+  <meta name="description" content="A desktop presentation tool with embedded interactive demos and LaTeX math. Built for academics and researchers who give technical talks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo">Eigendeck</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <p class="eyebrow">Desktop presentation tool</p>
+    <h1>The characteristic<br>presentation tool.</h1>
+    <p class="subtitle">Embedded interactive demos. LaTeX math. Single-file presentations.<br>Built for academics who give technical talks.</p>
+    <div class="hero-cta">
+      <a href="#download" class="btn btn-primary">Download</a>
+      <a href="https://github.com/dgleich/eigendeck" class="btn btn-secondary" target="_blank" rel="noopener">View source</a>
+    </div>
+  </section>
+
+  <section class="preview">
+    <div class="preview-window">
+      <div class="window-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="window-body">
+        <div class="mock-slide">
+          <div class="mock-title">PageRank via Power Iteration</div>
+          <div class="mock-math">x<sub>k+1</sub> = <span class="math-accent">&alpha;</span> M x<sub>k</sub> + (1 &minus; <span class="math-accent">&alpha;</span>) v</div>
+          <div class="mock-demo">
+            <div class="mock-demo-label">interactive demo</div>
+            <div class="mock-graph">
+              <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                <line x1="40" y1="30" x2="100" y2="60" stroke="#555" stroke-width="1.5"/>
+                <line x1="100" y1="60" x2="160" y2="30" stroke="#555" stroke-width="1.5"/>
+                <line x1="100" y1="60" x2="80" y2="100" stroke="#555" stroke-width="1.5"/>
+                <line x1="100" y1="60" x2="140" y2="95" stroke="#555" stroke-width="1.5"/>
+                <line x1="40" y1="30" x2="80" y2="100" stroke="#555" stroke-width="1.5"/>
+                <line x1="160" y1="30" x2="140" y2="95" stroke="#555" stroke-width="1.5"/>
+                <circle cx="40" cy="30" r="8" fill="#4f8ff7"/>
+                <circle cx="100" cy="60" r="10" fill="#7b61ff"/>
+                <circle cx="160" cy="30" r="7" fill="#4f8ff7"/>
+                <circle cx="80" cy="100" r="6" fill="#3a7bd5"/>
+                <circle cx="140" cy="95" r="6" fill="#3a7bd5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <h2>Everything you need for technical talks.</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="feature-icon">&#x222B;</div>
+        <h3>LaTeX math</h3>
+        <p>MathJax 4 renders publication-quality math directly in your slides. No screenshots, no copy-paste.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&lt;/&gt;</div>
+        <h3>Embedded demos</h3>
+        <p>Drop in standalone HTML files &mdash; algorithm visualizations, interactive charts, simulations &mdash; they run live during your talk.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#x25A1;</div>
+        <h3>Freeform canvas</h3>
+        <p>Every element is positioned freely on a 1920&times;1080 canvas. No templates, no constraints. Full visual control.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#x1F4BE;</div>
+        <h3>Single-file format</h3>
+        <p>Presentations are plain JSON + assets in a folder. Version control friendly. SQLite storage for reliability.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#x21A7;</div>
+        <h3>Self-contained export</h3>
+        <p>Export to a single HTML file that works in any browser. Share a talk without installing anything.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#x2318;</div>
+        <h3>Native app</h3>
+        <p>Built with Tauri. Fast, lightweight, no Electron bloat. macOS, Linux, Windows.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <h2>Get Eigendeck</h2>
+    <p class="download-note">Early release. macOS and Linux builds available.</p>
+    <div class="download-buttons">
+      <a href="https://github.com/dgleich/eigendeck/releases/latest" class="btn btn-primary">Download latest release</a>
+    </div>
+    <p class="download-alt">Or build from source: <code>git clone https://github.com/dgleich/eigendeck && npm install && npm run tauri build</code></p>
+  </section>
+
+  <footer>
+    <p>Eigendeck is open source. Built by <a href="https://www.cs.purdue.edu/homes/dgleich/" target="_blank" rel="noopener">David Gleich</a>.</p>
+  </footer>
+
+</body>
+</html>

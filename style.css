@@ -1,0 +1,402 @@
+/* Eigendeck website — minimal, dark */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --bg-card: #141414;
+  --border: #222;
+  --text: #e8e8e8;
+  --text-muted: #888;
+  --accent: #7b61ff;
+  --accent-hover: #9580ff;
+  --font: 'PT Sans', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+code {
+  font-size: 0.85em;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+/* Nav */
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+/* Hero */
+
+.hero {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 160px 24px 60px;
+  text-align: center;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.btn-secondary:hover {
+  border-color: #444;
+  color: var(--text);
+}
+
+/* Preview window */
+
+.preview {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+.preview-window {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  animation: fadeUp 0.8s ease both;
+  animation-delay: 0.2s;
+}
+
+.window-bar {
+  padding: 12px 16px;
+  display: flex;
+  gap: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #333;
+}
+
+.window-body {
+  padding: 32px;
+}
+
+.mock-slide {
+  background: #fff;
+  border-radius: 6px;
+  padding: 28px 32px;
+  color: #111;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.mock-title {
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+}
+
+.mock-math {
+  font-size: clamp(0.85rem, 2vw, 1.2rem);
+  font-style: italic;
+  color: #333;
+}
+
+.math-accent {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.mock-demo {
+  flex: 1;
+  min-height: 0;
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mock-demo-label {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+}
+
+.mock-graph svg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+}
+
+.mock-graph circle {
+  animation: pulse 3s ease-in-out infinite alternate;
+}
+
+.mock-graph circle:nth-child(7) { animation-delay: 0.3s; }
+.mock-graph circle:nth-child(8) { animation-delay: 0.6s; }
+.mock-graph circle:nth-child(9) { animation-delay: 0.9s; }
+.mock-graph circle:nth-child(10) { animation-delay: 1.2s; }
+
+/* Features */
+
+.features {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.features h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 48px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.feature {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 24px;
+  transition: border-color 0.2s;
+}
+
+.feature:hover {
+  border-color: #333;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+
+.feature h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feature p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Download */
+
+.download {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.download h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.download-note {
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+.download-buttons {
+  margin-bottom: 24px;
+}
+
+.download-alt {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Footer */
+
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 24px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+footer a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+footer a:hover {
+  color: var(--text);
+}
+
+/* Animations */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: 120px;
+  }
+
+  .nav-links {
+    gap: 16px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mock-slide {
+    padding: 16px 20px;
+  }
+}
