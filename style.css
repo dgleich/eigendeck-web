@@ -173,7 +173,7 @@ nav {
 /* Preview window */
 
 .preview {
-  max-width: 900px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px 80px;
   animation: fadeUp 0.8s ease both;
