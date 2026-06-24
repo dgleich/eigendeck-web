@@ -51,22 +51,17 @@ default fonts, theme, text sizes, math macros), <strong>Slide</strong> (this sli
 and fonts), and <strong>Element</strong> (the selected element&#39;s properties). It&#39;s open by
 default; toggle it with <strong>View → Toggle Inspector</strong>.</li>
 </ul>
-<h3>Colouring text — and the math comes along</h3>
-<p>The screenshot above has the body element selected, so the inspector shows the
-<strong>Element</strong> tab. The <strong>Text Color</strong> control sets the colour of the whole
-element — and because inline math renders in the current text colour, <em>the
-equations recolour with it</em>. That&#39;s how the red <code>Φ</code> and the blue &quot;graph&quot; on this
-slide are done:</p>
-<ul>
-<li><strong>A whole element</strong> — pick a swatch (or a custom colour) under <strong>Text Color</strong>.</li>
-<li><strong>Just a phrase (and its math)</strong> — select the run while editing and use the
-format toolbar&#39;s colour; MathJax inside that run picks up the colour too. The
-<strong>Clear inline</strong> button removes those per-run colours and returns the element
-to one uniform colour.</li>
-</ul>
-<p>The same panel carries <strong>Background</strong> (a panel behind the text), <strong>Effect</strong>
-(shadow / glow for legibility over busy slides), vertical alignment, rotation,
-and <strong>Position &amp; Size</strong>.</p>
+<h3>Coloring text — and the math comes along</h3>
+<p>Inline math renders in the <em>current text color</em>, so coloring text colors its math
+too. The red <code>Φ</code> and the blue &quot;graph&quot; / &quot;directed adjacency matrix&quot; on this slide
+were done with <strong>inline spans</strong>: while editing the element, select the run
+(including any <code>$…$</code>) and pick a color from the <strong>text-editor format toolbar</strong> —
+the MathJax in that run picks up the color. <strong>Clear inline</strong> (in the Element
+inspector) strips those per-run colors again.</p>
+<p>To recolor the <strong>whole element</strong> uniformly instead, use the <strong>Text Color</strong> control
+in the Element inspector (shown above). The same panel carries <strong>Background</strong> (a
+panel behind the text), <strong>Effect</strong> (shadow / glow for legibility over busy
+slides), vertical alignment, rotation, and <strong>Position &amp; Size</strong>.</p>
 <hr>
 <h2>1. Title and the &quot;show / tell&quot; opening (slides 1–3)</h2>
 <p><img src="images/welcome/slide-00.png" alt="Slide 1 — Welcome to Eigendeck"></p>
@@ -94,9 +89,9 @@ plus &quot;build&quot; copies that share numbering and reveal more each step. Du
 slide as a <strong>Build Slide</strong> (Slide menu, or right-click in the sidebar) and add
 the next piece; in presentation they advance as one numbered step.</li>
 <li><strong>Cover rectangles as reveal masks.</strong> A <strong>Cover</strong> element is a rectangle that
-defaults to the slide background colour, so it&#39;s invisible — drop it over text
+defaults to the slide background color, so it&#39;s invisible — drop it over text
 you want to reveal later, then remove it on the next build slide. (You can also
-tint a cover any colour from the inspector.)</li>
+tint a cover any color from the inspector.)</li>
 </ul>
 <p><img src="images/welcome/slide-06.png" alt="Slide 6 — history + a live demo revealed"></p>
 <p>Slide 6 adds a <strong>demo</strong> to the group: the same text, now with an interactive
@@ -113,7 +108,7 @@ positioned independently and communicate over <code>BroadcastChannel</code>. The
 a <strong>Text Box</strong> with the governing equation <code>$$\frac{dx}{dt} = -i\mL x$$</code>, an
 <strong>annotation</strong> (&quot;Move the slider…&quot;), and an <strong>arrow</strong> pointing at the control.
 Note the slide&#39;s <strong>theme is black</strong> — set per-slide in the Slide inspector — and
-the demo&#39;s controls automatically adopt readable colours via the injected theme
+the demo&#39;s controls automatically adopt readable colors via the injected theme
 variables.</p>
 <p><strong>Slide 10 — caffeine / adenosine.</strong> A molecule <code>viewer</code> piece plus a <code>panel</code>.
 <strong>Slide 11 — graph community structure.</strong> Three pieces (<code>graph</code>, <code>controls</code>,
