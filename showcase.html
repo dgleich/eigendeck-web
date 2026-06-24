@@ -729,8 +729,153 @@ li { margin-bottom: 0.15em; list-style-position: inside; }
 &lt;/body&gt;
 &lt;/html&gt;
 " style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="Needleman–Wunsch global alignment. Drag the gap penalty to re-solve; the traceback path and alignment update live." style="display:block;overflow:hidden;"><title>Needleman–Wunsch global alignment. Drag the gap penalty to re-solve; the traceback path and alignment update live.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">Needleman–Wunsch global alignment. Drag the gap penalty to re-solve; the traceback path and alignment update live.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">5</span></div></div>
+<div class="slide" data-index="5" style="background:#ffffff;"><div style="position:absolute;left:60px;top:60px;width:1800px;height:120px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 120" preserveAspectRatio="none" width="1800" height="120" overflow="hidden" role="img" aria-label="Molecule viewer" style="display:block;overflow:hidden;"><title>Molecule viewer</title><foreignObject x="0" y="0" width="1800" height="120" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans', sans-serif;font-size:72px;font-weight:700;font-style:normal;color:#222222;line-height:1.3;padding:8px 12px;">Molecule viewer</div></div></foreignObject></svg></div><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;style id=&quot;eigendeck-demo-vars&quot;&gt;
+:root{
+  --eigendeck-bg: #ffffff;
+  --eigendeck-fg: #222222;
+  --eigendeck-heading: #222222;
+  --eigendeck-accent: #2563eb;
+  --eigendeck-muted: #888888;
+  --eigendeck-font: 'PT Sans';
+  --eigendeck-narrow: 'PT Sans Narrow';
+  --eigendeck-mono: 'Source Code Pro';
+  --eigendeck-base-size: 48px;
+}
+&lt;/style&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Molecule viewer&lt;/title&gt;
+&lt;!--
+  Showcase demo — a 3-D ball-and-stick molecule viewer. Title-LESS, theme-aware,
+  interaction-first: DRAG to rotate; it auto-spins gently when idle. &quot;next&quot; cycles
+  through molecules with exact, computable geometry (methane, ammonia, water,
+  ethane, benzene). Depth-sorted spheres + bonds; CPK-ish atom colors with a
+  theme-colored outline so they read on any slide. Transparent over the slide.
+--&gt;
+&lt;style&gt;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden; position: relative;
+    background: var(--eigendeck-bg, #ffffff);
+    color: var(--eigendeck-fg, #222222);
+    font-family: var(--eigendeck-font, 'PT Sans'), system-ui, sans-serif;
+    font-size: var(--eigendeck-base-size, 22px);
+  }
+  #mv { width: 100%; height: 100%; display: block; cursor: grab; }
+  #mv.grab { cursor: grabbing; }
+  .mv-name { position: absolute; left: 1.1em; top: 0.8em; font-size: 1em; font-weight: 700;
+    color: var(--eigendeck-heading, var(--eigendeck-fg, #222)); pointer-events: none; user-select: none; }
+  .mv-formula { font-size: 0.7em; font-weight: 400; color: var(--eigendeck-muted, #888); margin-left: 0.4em; }
+  .mv-next { position: absolute; right: 1.1em; bottom: 1em; font-family: inherit; font-size: 0.68em; cursor: pointer;
+    border: 1px solid color-mix(in srgb, var(--eigendeck-fg,#333) 30%, transparent);
+    background: transparent; color: var(--eigendeck-fg, #222); border-radius: 5px; padding: 0.25em 0.8em; }
+  .mv-hint { position: absolute; left: 50%; bottom: 1em; transform: translateX(-50%);
+    font-size: 0.66em; color: var(--eigendeck-muted, #888); pointer-events: none; transition: opacity 0.4s; user-select: none; }
+  .mv-hint.gone { opacity: 0; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;canvas id=&quot;mv&quot;&gt;&lt;/canvas&gt;
+  &lt;div class=&quot;mv-name&quot; id=&quot;mv-name&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;mv-hint&quot; id=&quot;mv-hint&quot;&gt;drag to rotate&lt;/div&gt;
+  &lt;button class=&quot;mv-next&quot; id=&quot;mv-next&quot;&gt;next molecule &amp;rarr;&lt;/button&gt;
+&lt;script&gt;
+(function () {
+  'use strict';
+  function tv(n, fb) { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || fb; } catch (e) { return fb; } }
+  var cv = document.getElementById('mv'), ctx = cv.getContext('2d');
+  var nameEl = document.getElementById('mv-name'), hint = document.getElementById('mv-hint'), nextBtn = document.getElementById('mv-next');
+
+  // CPK-ish colors; outline is theme-fg so atoms read on light AND dark.
+  var EL = { H: { c: '#d8d8d8', r: 0.34 }, C: { c: '#8a8f98', r: 0.62 }, N: { c: '#3b6fe0', r: 0.58 }, O: { c: '#e0483b', r: 0.56 } };
+
+  // Build molecules from exact geometry.
+  function tetra() { return [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]]; }
+  function methane() { var a = [{ e: 'C', p: [0, 0, 0] }]; tetra().forEach(function (d) { var L = Math.hypot(d[0], d[1], d[2]); a.push({ e: 'H', p: [d[0] / L * 1.09, d[1] / L * 1.09, d[2] / L * 1.09] }); }); return { name: 'Methane', formula: 'CH₄', atoms: a, bonds: [[0, 1], [0, 2], [0, 3], [0, 4]] }; }
+  function water() { var ang = 104.5 * Math.PI / 180, b = 0.96; return { name: 'Water', formula: 'H₂O', atoms: [{ e: 'O', p: [0, 0, 0] }, { e: 'H', p: [b * Math.sin(ang / 2), b * Math.cos(ang / 2), 0] }, { e: 'H', p: [-b * Math.sin(ang / 2), b * Math.cos(ang / 2), 0] }], bonds: [[0, 1], [0, 2]] }; }
+  function ammonia() { var a = [{ e: 'N', p: [0, 0.3, 0] }], R = 0.94, th = 1.911; for (var k = 0; k &lt; 3; k++) { var ph = k * 2 * Math.PI / 3; a.push({ e: 'H', p: [R * Math.sin(th) * Math.cos(ph), 0.3 - R * Math.cos(th), R * Math.sin(th) * Math.sin(ph)] }); } return { name: 'Ammonia', formula: 'NH₃', atoms: a, bonds: [[0, 1], [0, 2], [0, 3]] }; }
+  function ethane() {
+    var a = [{ e: 'C', p: [0, 0, 0.77] }, { e: 'C', p: [0, 0, -0.77] }], bonds = [[0, 1]];
+    for (var s = 0; s &lt; 2; s++) { var zc = s ? -0.77 : 0.77, sgn = s ? -1 : 1, off = s ? Math.PI / 3 : 0;
+      for (var k = 0; k &lt; 3; k++) { var ph = off + k * 2 * Math.PI / 3, rr = 1.03; a.push({ e: 'H', p: [rr * Math.sin(1.91) * Math.cos(ph), rr * Math.sin(1.91) * Math.sin(ph), zc + sgn * rr * Math.cos(1.23)] }); bonds.push([s, a.length - 1]); } }
+    return { name: 'Ethane', formula: 'C₂H₆', atoms: a, bonds: bonds };
+  }
+  function benzene() {
+    var a = [], bonds = [], rC = 1.39, rH = 2.46;
+    for (var k = 0; k &lt; 6; k++) { var th = k * Math.PI / 3; a.push({ e: 'C', p: [rC * Math.cos(th), rC * Math.sin(th), 0] }); }
+    for (var k2 = 0; k2 &lt; 6; k2++) { var th2 = k2 * Math.PI / 3; a.push({ e: 'H', p: [rH * Math.cos(th2), rH * Math.sin(th2), 0] }); bonds.push([k2, 6 + k2]); }
+    for (var k3 = 0; k3 &lt; 6; k3++) bonds.push([k3, (k3 + 1) % 6]);
+    return { name: 'Benzene', formula: 'C₆H₆', atoms: a, bonds: bonds };
+  }
+  var MOLS = [methane(), ammonia(), water(), ethane(), benzene()], mi = 1, mol = MOLS[mi];
+
+  var W = 0, H = 0, dpr = 1, ax = -0.5, ay = 0.6, drag = null, autoSpin = true;
+
+  function resize() { var r = cv.getBoundingClientRect(); dpr = window.devicePixelRatio || 1; W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr)); cv.width = W; cv.height = H; }
+
+  function project() {
+    var cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay);
+    var pts = mol.atoms.map(function (a) {
+      var x = a.p[0], y = a.p[1], z = a.p[2];
+      // rotate Y then X
+      var x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
+      var y2 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+      return { x: x1, y: y2, z: z2, e: a.e };
+    });
+    return pts;
+  }
+
+  function draw() {
+    var fg = tv('--eigendeck-fg', '#222'), bg = tv('--eigendeck-bg', '#fff');
+    ctx.clearRect(0, 0, W, H);
+    var pts = project();
+    // fit to canvas
+    var R = 0; pts.forEach(function (p) { R = Math.max(R, Math.hypot(p.x, p.y)); });
+    R += 0.7; var scale = Math.min(W, H) * 0.42 / R, ox = W / 2, oy = H / 2;
+    function sx(x) { return ox + x * scale; } function sy(y) { return oy - y * scale; }
+    // bonds (depth via midpoint z) + atoms together, painter-sorted
+    var items = [];
+    mol.bonds.forEach(function (b) { var A = pts[b[0]], B = pts[b[1]]; items.push({ z: (A.z + B.z) / 2, kind: 'bond', A: A, B: B }); });
+    pts.forEach(function (p, i) { items.push({ z: p.z, kind: 'atom', p: p, e: p.e }); });
+    items.sort(function (a, b) { return a.z - b.z; });
+    items.forEach(function (it) {
+      if (it.kind === 'bond') {
+        ctx.strokeStyle = fg; ctx.globalAlpha = 0.55; ctx.lineWidth = Math.max(2, scale * 0.12); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(sx(it.A.x), sy(it.A.y)); ctx.lineTo(sx(it.B.x), sy(it.B.y)); ctx.stroke(); ctx.globalAlpha = 1;
+      } else {
+        var el = EL[it.e] || EL.C, x = sx(it.p.x), y = sy(it.p.y), rad = el.r * scale * 0.62;
+        var g = ctx.createRadialGradient(x - rad * 0.35, y - rad * 0.35, rad * 0.1, x, y, rad);
+        g.addColorStop(0, lighten(el.c, 0.45)); g.addColorStop(1, el.c);
+        ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.283); ctx.fillStyle = g; ctx.fill();
+        ctx.lineWidth = Math.max(1, scale * 0.03); ctx.strokeStyle = fg; ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+      }
+    });
+  }
+  function lighten(hex, t) { var n = parseInt(hex.slice(1), 16), r = (n &gt;&gt; 16) &amp; 255, g = (n &gt;&gt; 8) &amp; 255, b = n &amp; 255; return 'rgb(' + Math.round(r + (255 - r) * t) + ',' + Math.round(g + (255 - g) * t) + ',' + Math.round(b + (255 - b) * t) + ')'; }
+
+  function setMol(m) { mol = m; nameEl.innerHTML = m.name + '&lt;span class=&quot;mv-formula&quot;&gt;' + m.formula + '&lt;/span&gt;'; }
+
+  function frame() { if (autoSpin &amp;&amp; drag == null) { ay += 0.006; } draw(); requestAnimationFrame(frame); }
+
+  cv.addEventListener('pointerdown', function (e) { drag = { x: e.clientX, y: e.clientY }; autoSpin = false; cv.classList.add('grab'); cv.setPointerCapture(e.pointerId); hint.classList.add('gone'); });
+  cv.addEventListener('pointermove', function (e) { if (!drag) return; ay += (e.clientX - drag.x) * 0.01; ax += (e.clientY - drag.y) * 0.01; ax = Math.max(-1.5, Math.min(1.5, ax)); drag.x = e.clientX; drag.y = e.clientY; });
+  function up() { if (drag) { drag = null; cv.classList.remove('grab'); setTimeout(function () { autoSpin = true; }, 1400); } }
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  nextBtn.addEventListener('click', function () { mi = (mi + 1) % MOLS.length; setMol(MOLS[mi]); });
+  window.addEventListener('resize', function () { resize(); draw(); });
+
+  function start() { resize(); setMol(mol); requestAnimationFrame(frame); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="A 3-D ball-and-stick model — drag to rotate, or step through molecules. Exact molecular geometry." style="display:block;overflow:hidden;"><title>A 3-D ball-and-stick model — drag to rotate, or step through molecules. Exact molecular geometry.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">A 3-D ball-and-stick model — drag to rotate, or step through molecules. Exact molecular geometry.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">6</span></div></div>
 </div>
-<!-- eigendeck-source: eyJjb25maWciOnsiYXV0aG9yIjoiRGF2aWQgRi4gR2xlaWNoIiwiYmFja2dyb3VuZFRyYW5zaXRpb24iOiJmYWRlIiwiaGVpZ2h0IjoxMDgwLCJzaG93U2xpZGVOdW1iZXIiOnRydWUsInRyYW5zaXRpb24iOiJzbGlkZSIsInZlbnVlIjoiU0lBTSBBbm51YWwgTWVldGluZyAyMDI2Iiwid2lkdGgiOjE5MjB9LCJzbGlkZXMiOlt7ImVsZW1lbnRzIjpbeyJpZCI6InQtdGl0bGUiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IjxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlclwiPkVpZ2VuZGVjazwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjYwLCJ5Ijo0MDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjE4MH19LHsiaWQiOiJ0LXN1YiIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiYm9keSIsImh0bWwiOiI8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXJcIj5JbnRlcmFjdGl2ZSBzaG93LWFuZC10ZWxsIHByZXNlbnRhdGlvbnMg4oCUIHJlYWwgZGVtb3MsIGxpdmUgb24gdGhlIHNsaWRlLjwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjM2MCwieSI6NTkwLCJ3aWR0aCI6MTIwMCwiaGVpZ2h0IjoxMjB9fV0sImlkIjoiYzNkNGU1ZjYtMzMzMy00Y2NjLWEzMzMtMDAwMDAwMDAwMDAxIiwibm90ZXMiOiJUaXRsZSBzbGlkZS4gV2VsY29tZSB0aGUgYXVkaWVuY2UgYW5kIGludHJvZHVjZSB0aGUgdGFsayB0b3BpYy4ifSx7ImlkIjoiMGRmYmQ1MDMtNzVkZS00NzIzLTk2ZjYtYzE0Yzg5NjIzYjNhIiwiZWxlbWVudHMiOlt7ImlkIjoidDEiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IkdyYWRpZW50IGRlc2NlbnQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMSIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjQ2MDA5NjI5LWI2OTktNDZjNy04MjIzLTJiOWYwMDMyZGI4ZCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYWRpZW50LWRlc2NlbnQuaHRtbCJ9LHsiaWQiOiJjMSIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgYW55d2hlcmUgdG8gZHJvcCBhIGJhbGwg4oCUIGl0IGZvbGxvd3MgdGhlIGdyYWRpZW50IGludG8gYSBiYXNpbiBvbiBhIG5vbi1jb252ZXggc3VyZmFjZS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn0seyJpZCI6ImQ0OTk1MWQ0LWI1MzMtNDNhYS1hMTAyLWUxNzE4MGM1ZTdiMyIsImVsZW1lbnRzIjpbeyJpZCI6InQyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJ0aXRsZSIsImh0bWwiOiJHcmFwaCBsYXlvdXQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMiIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6ImQzMWVhMjE5LTRlN2EtNDkzOC1hMDRhLTc5MmFjOTBmOTI2YSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYXBoLWxheW91dC5odG1sIn0seyJpZCI6ImMyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJmb290bm90ZSIsImh0bWwiOiJEcmFnIGFueSBub2RlIOKAlCB0aGUgZm9yY2UtZGlyZWN0ZWQgbGF5b3V0IHJlLXNldHRsZXMgYW5kIHJldmVhbHMgdGhyZWUgY29tbXVuaXRpZXMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9LHsiaWQiOiIxMTE3M2U5NC1kZjNhLTRkNmItYWJjZS0wZDUxODUxNDJjNmEiLCJlbGVtZW50cyI6W3siaWQiOiJ0MyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiVGhlIHdhdmUgZXF1YXRpb24iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMyIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjhhMDQyODJkLTRlZWEtNDU3OC1hYmJjLTI0NjM0MjIzZjExOSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL3dhdmUtZXF1YXRpb24uaHRtbCJ9LHsiaWQiOiJjMyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgb3IgZHJhZyB0byBwbHVjayB0aGUgc3RyaW5nIOKAlCB0aGUgcHVsc2Ugc3BsaXRzIGludG8gdHdvIHdhdmVzIGFuZCByZWZsZWN0cyBvZmYgdGhlIGVuZHMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9LHsiaWQiOiJhNzljZjU3Yi1lN2JkLTQ5NzYtOTY0Yi1lZjlhMjVhNmE3OTUiLCJlbGVtZW50cyI6W3siaWQiOiJ0NCIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiU2VxdWVuY2UgYWxpZ25tZW50IiwicG9zaXRpb24iOnsieCI6NjAsInkiOjYwLCJ3aWR0aCI6MTgwMCwiaGVpZ2h0IjoxMjB9fSx7ImlkIjoiZDQiLCJ0eXBlIjoiZGVtbyIsImFzc2V0SWQiOiI3MWEzM2FiYi0zMGRlLTQ4YTQtODBmZi0yODBmNGY4MTBjMDQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MjEwLCJ3aWR0aCI6MTgwMCwiaGVpZ2h0Ijo3ODB9LCJzcmMiOiJkZW1vcy9zZXF1ZW5jZS1hbGlnbm1lbnQuaHRtbCJ9LHsiaWQiOiJjNCIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiTmVlZGxlbWFu4oCTV3Vuc2NoIGdsb2JhbCBhbGlnbm1lbnQuIERyYWcgdGhlIGdhcCBwZW5hbHR5IHRvIHJlLXNvbHZlOyB0aGUgdHJhY2ViYWNrIHBhdGggYW5kIGFsaWdubWVudCB1cGRhdGUgbGl2ZS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn1dLCJ0aGVtZSI6IndoaXRlIiwidGl0bGUiOiJFaWdlbmRlY2sg4oCUIFNob3djYXNlIn0= -->
+<!-- eigendeck-source: eyJjb25maWciOnsiYXV0aG9yIjoiRGF2aWQgRi4gR2xlaWNoIiwiYmFja2dyb3VuZFRyYW5zaXRpb24iOiJmYWRlIiwiaGVpZ2h0IjoxMDgwLCJzaG93U2xpZGVOdW1iZXIiOnRydWUsInRyYW5zaXRpb24iOiJzbGlkZSIsInZlbnVlIjoiU0lBTSBBbm51YWwgTWVldGluZyAyMDI2Iiwid2lkdGgiOjE5MjB9LCJzbGlkZXMiOlt7ImVsZW1lbnRzIjpbeyJpZCI6InQtdGl0bGUiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IjxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlclwiPkVpZ2VuZGVjazwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjYwLCJ5Ijo0MDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjE4MH19LHsiaWQiOiJ0LXN1YiIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiYm9keSIsImh0bWwiOiI8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXJcIj5JbnRlcmFjdGl2ZSBzaG93LWFuZC10ZWxsIHByZXNlbnRhdGlvbnMg4oCUIHJlYWwgZGVtb3MsIGxpdmUgb24gdGhlIHNsaWRlLjwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjM2MCwieSI6NTkwLCJ3aWR0aCI6MTIwMCwiaGVpZ2h0IjoxMjB9fV0sImlkIjoiYzNkNGU1ZjYtMzMzMy00Y2NjLWEzMzMtMDAwMDAwMDAwMDAxIiwibm90ZXMiOiJUaXRsZSBzbGlkZS4gV2VsY29tZSB0aGUgYXVkaWVuY2UgYW5kIGludHJvZHVjZSB0aGUgdGFsayB0b3BpYy4ifSx7ImlkIjoiOTZhNThjYjgtMTUxNy00NmIzLWJhNjItMDJkYTM3ZjczOTdiIiwiZWxlbWVudHMiOlt7ImlkIjoidDEiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IkdyYWRpZW50IGRlc2NlbnQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMSIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjQ2MDA5NjI5LWI2OTktNDZjNy04MjIzLTJiOWYwMDMyZGI4ZCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYWRpZW50LWRlc2NlbnQuaHRtbCJ9LHsiaWQiOiJjMSIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgYW55d2hlcmUgdG8gZHJvcCBhIGJhbGwg4oCUIGl0IGZvbGxvd3MgdGhlIGdyYWRpZW50IGludG8gYSBiYXNpbiBvbiBhIG5vbi1jb252ZXggc3VyZmFjZS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn0seyJpZCI6ImM0NzE2NTA0LTllODctNDNlOS1hZjlkLTQ2ZGE3YTMxMWIzMyIsImVsZW1lbnRzIjpbeyJpZCI6InQyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJ0aXRsZSIsImh0bWwiOiJHcmFwaCBsYXlvdXQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMiIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6ImQzMWVhMjE5LTRlN2EtNDkzOC1hMDRhLTc5MmFjOTBmOTI2YSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYXBoLWxheW91dC5odG1sIn0seyJpZCI6ImMyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJmb290bm90ZSIsImh0bWwiOiJEcmFnIGFueSBub2RlIOKAlCB0aGUgZm9yY2UtZGlyZWN0ZWQgbGF5b3V0IHJlLXNldHRsZXMgYW5kIHJldmVhbHMgdGhyZWUgY29tbXVuaXRpZXMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9LHsiaWQiOiI5OWRiNWJiNi02YTI4LTRiZTktYTYyNy1kNTg5NjRkZWJiMjEiLCJlbGVtZW50cyI6W3siaWQiOiJ0MyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiVGhlIHdhdmUgZXF1YXRpb24iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMyIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjhhMDQyODJkLTRlZWEtNDU3OC1hYmJjLTI0NjM0MjIzZjExOSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL3dhdmUtZXF1YXRpb24uaHRtbCJ9LHsiaWQiOiJjMyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgb3IgZHJhZyB0byBwbHVjayB0aGUgc3RyaW5nIOKAlCB0aGUgcHVsc2Ugc3BsaXRzIGludG8gdHdvIHdhdmVzIGFuZCByZWZsZWN0cyBvZmYgdGhlIGVuZHMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9LHsiaWQiOiI4NjNmYzk1MS0yZmNiLTQ1ZGItYTJhZC01ZjA5ZDhjMWVmMDQiLCJlbGVtZW50cyI6W3siaWQiOiJ0NCIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiU2VxdWVuY2UgYWxpZ25tZW50IiwicG9zaXRpb24iOnsieCI6NjAsInkiOjYwLCJ3aWR0aCI6MTgwMCwiaGVpZ2h0IjoxMjB9fSx7ImlkIjoiZDQiLCJ0eXBlIjoiZGVtbyIsImFzc2V0SWQiOiI3MWEzM2FiYi0zMGRlLTQ4YTQtODBmZi0yODBmNGY4MTBjMDQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MjEwLCJ3aWR0aCI6MTgwMCwiaGVpZ2h0Ijo3ODB9LCJzcmMiOiJkZW1vcy9zZXF1ZW5jZS1hbGlnbm1lbnQuaHRtbCJ9LHsiaWQiOiJjNCIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiTmVlZGxlbWFu4oCTV3Vuc2NoIGdsb2JhbCBhbGlnbm1lbnQuIERyYWcgdGhlIGdhcCBwZW5hbHR5IHRvIHJlLXNvbHZlOyB0aGUgdHJhY2ViYWNrIHBhdGggYW5kIGFsaWdubWVudCB1cGRhdGUgbGl2ZS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn0seyJpZCI6ImZhYjhlZDExLWFkMWYtNGM3ZC05ZjFmLTQzMGM5ZjA1N2IxYyIsImVsZW1lbnRzIjpbeyJpZCI6InQ1IiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJ0aXRsZSIsImh0bWwiOiJNb2xlY3VsZSB2aWV3ZXIiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkNSIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjdiN2VjNTM0LWI0NDUtNGExMC1iNWQzLThhMmZmZWU5NTE2OCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL21vbGVjdWxlLXZpZXdlci5odG1sIn0seyJpZCI6ImM1IiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJmb290bm90ZSIsImh0bWwiOiJBIDMtRCBiYWxsLWFuZC1zdGljayBtb2RlbCDigJQgZHJhZyB0byByb3RhdGUsIG9yIHN0ZXAgdGhyb3VnaCBtb2xlY3VsZXMuIEV4YWN0IG1vbGVjdWxhciBnZW9tZXRyeS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn1dLCJ0aGVtZSI6IndoaXRlIiwidGl0bGUiOiJFaWdlbmRlY2sg4oCUIFNob3djYXNlIn0= -->
 <div id="nav-bar">
   <button id="nb-prev">&lsaquo;</button>
   <span class="nav-pos"><span id="nb-cur">1</span> / <span id="nb-total"></span></span>
