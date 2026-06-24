@@ -132,7 +132,7 @@ nav {
   left: 100%;
   bottom: 0.08em;
   margin-left: 0.12em;
-  font-size: 0.6em;
+  font-size: 1em;
   opacity: 0;
   transform: translateX(-0.2em) translateY(0.1em) rotate(-8deg);
   transition: opacity 0.28s ease, transform 0.28s ease;
