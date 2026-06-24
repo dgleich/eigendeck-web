@@ -1,0 +1,155 @@
+/* Eigendeck manual — sidebar + readable long-form content on the dark theme. */
+
+body.manual { background: var(--bg); }
+
+.manual-layout {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 80px 24px 80px;
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* Sidebar */
+.manual-nav {
+  position: sticky;
+  top: 80px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.manual-home {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 18px;
+}
+.manual-home:hover { color: var(--text); }
+.manual-nav-section {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 18px 0 8px;
+}
+.manual-nav ul { list-style: none; }
+.manual-nav li { margin: 0; }
+.manual-nav li a {
+  display: block;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition: color 0.15s, background 0.15s;
+}
+.manual-nav li a:hover { color: var(--text); background: var(--bg-card); }
+.manual-nav li a.active {
+  color: var(--text);
+  background: var(--bg-card);
+  border-left-color: var(--accent);
+}
+
+/* Content */
+.manual-content {
+  min-width: 0;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+.manual-content h1 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+  line-height: 1.2;
+}
+.manual-content h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 40px 0 12px;
+  padding-top: 8px;
+  letter-spacing: -0.01em;
+}
+.manual-content h3 { font-size: 1.12rem; font-weight: 700; margin: 28px 0 8px; }
+.manual-content p { margin: 0 0 16px; color: #cfcfcf; }
+.manual-content a { color: var(--accent-hover); text-decoration: none; }
+.manual-content a:hover { text-decoration: underline; }
+.manual-content strong { color: var(--text); }
+.manual-content ul, .manual-content ol { margin: 0 0 16px; padding-left: 1.4em; color: #cfcfcf; }
+.manual-content li { margin: 0 0 6px; }
+
+.manual-content blockquote {
+  margin: 0 0 20px;
+  padding: 12px 18px;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-card);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-muted);
+}
+.manual-content blockquote p { margin: 0; }
+
+.manual-content code {
+  font-family: 'PT Mono', ui-monospace, monospace;
+  font-size: 0.86em;
+}
+.manual-content pre {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 0 0 20px;
+}
+.manual-content pre code { background: none; border: none; padding: 0; color: var(--text); }
+
+.manual-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 8px 0 24px;
+}
+
+.manual-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 20px;
+  font-size: 0.92rem;
+}
+.manual-content th, .manual-content td {
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  text-align: left;
+}
+.manual-content th { background: var(--bg-card); color: var(--text); }
+.manual-content td { color: var(--text-muted); }
+.manual-content hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* Learning landing */
+.learn-hero { padding: 8px 0 8px; }
+.learn-hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -0.02em; margin: 8px 0 16px; }
+.learn-hero .eyebrow { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--accent); }
+.learn-hero .subtitle { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 16px; }
+.learn-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 24px; }
+.learn-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 20px;
+  transition: border-color 0.15s;
+}
+.learn-card:hover { border-color: #333; text-decoration: none; }
+.learn-card h3 { color: var(--text); font-size: 1.05rem; font-weight: 700; margin: 0 0 6px; }
+.learn-card p { color: var(--text-muted); font-size: 0.92rem; margin: 0; line-height: 1.55; }
+
+/* On /learning the sidebar is omitted — single column. */
+body.manual .manual-layout:has(> main:only-child),
+.manual-layout.learn { grid-template-columns: 1fr; }
+
+@media (max-width: 760px) {
+  .manual-layout { grid-template-columns: 1fr; gap: 24px; }
+  .manual-nav { position: static; }
+}

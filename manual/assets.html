@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Files, watching, and auto-reload — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a class="active" href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Files, watching, and auto-reload</h1>
+<h2>The rule</h2>
+<p>When you add a file to a deck — an <strong>image, PDF, demo HTML, Jupyter notebook,
+video, or <code>.vtt</code> captions</strong> — Eigendeck does two things at once:</p>
+<ol>
+<li><strong>Embeds the bytes</strong> in the <code>.eigendeck</code> file, so the deck is self-contained
+(hand it to someone without your <code>figs/</code> folder and everything still renders).</li>
+<li><strong>Remembers where it came from</strong> (the source path) and <strong>watches that file</strong>.
+Edit the source on disk — re-run the script that generates a plot, re-export a
+video, tweak a demo — and the slide <strong>updates automatically</strong>.</li>
+</ol>
+<p>So a file asset is both <em>embedded</em> (portable) and <em>linked</em> (live). You get the
+LaTeX/Beamer workflow (regenerate → it refreshes) without the fragility (the deck
+never breaks if the source file is gone).</p>
+<h2>The two mental models</h2>
+<ul>
+<li><strong>Beamer-style (the default).</strong> Your figures come from scripts. Keep the deck
+open, re-run the script, and the new plot appears. Watching is <strong>on</strong>.</li>
+<li><strong>PowerPoint-style.</strong> You want the bytes frozen at insert time — later edits to
+the source shouldn&#39;t leak in. Turn watching <strong>off</strong> (per asset, per deck, or
+globally) and the deck owns a snapshot.</li>
+</ul>
+<p>Both always render the asset&#39;s <em>current</em> bytes; there&#39;s no per-slide version
+pinning. (Some inserts freeze automatically — e.g. embedding an SVG&#39;s external
+images severs the link on purpose.)</p>
+<h2>Turning watching on/off</h2>
+<p>Watching resolves through a cascade — most specific wins:</p>
+<ol>
+<li><strong>Per asset</strong> — the <strong>Watch</strong> checkbox in the Inspector&#39;s <em>Asset</em> section
+(select the element). Unchecking it freezes that one asset.</li>
+<li><strong>Per deck</strong> — a presentation-level override (Presentation properties).</li>
+<li><strong>Global</strong> — Settings → <em>Auto-reload assets</em> (the factory default is <strong>on</strong>).</li>
+</ol>
+<p>An asset can only opt <strong>out</strong> below what the deck/global allows — it can&#39;t force
+watching on when the deck has it off.</p>
+<h2>Reload from disk</h2>
+<p>The Inspector&#39;s <em>Asset</em> section also has <strong>Reload from disk now</strong> (one-shot) and a
+<strong>version history</strong> (revert to an earlier embedded version). Reverting writes a new
+&quot;current&quot; version in the deck — it never edits the file on disk.</p>
+<h2>Notebooks: editing takes control</h2>
+<p>A notebook is special: you can <strong>edit its cells in the deck</strong> (the recording —
+see <a href="notebooks.html">Notebooks</a>). To protect those edits, <strong>making a notebook
+editable turns watching off</strong> for its <code>.ipynb</code> — a disk reload won&#39;t clobber what
+you typed. This is <strong>sticky</strong>: turning editable back off <em>leaves</em> watching off;
+re-enable <strong>Watch</strong> explicitly when you want it to follow the file again. The
+asset keeps its source link, so <strong>Reload from disk</strong> still works (and it discards
+your in-deck cell edits, taking the file as-is).</p>
+<p>(For <strong>videos</strong>, both the movie file <em>and</em> an attached <strong>captions <code>.vtt</code></strong> are
+watched independently — see <a href="videos.html">Videos</a>.)</p>
+<h2>Why</h2>
+<p>Embedding makes decks portable; watching makes them live — most tools force you to
+pick one. Eigendeck does both because the common case is &quot;my plots come from code
+and I tweak them up to talk time,&quot; and the failure case (&quot;the script broke an hour
+before the talk&quot;) is covered by the embedded bytes + version history, not by
+hoping the file on disk is good.</p>
+</main></div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jupyter servers — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a class="active" href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Jupyter servers</h1>
+<h2>The rule</h2>
+<p>A notebook element in your deck says only <strong>which kernel it needs</strong>
+(<code>python3</code>, <code>julia-1.10</code>, <code>ir</code>, ...). The <strong>server URL</strong> and the
+<strong>authentication token</strong> live in a per-machine registry — Settings
+→ Jupyter servers — and never travel with the deck file.</p>
+<p>When the deck renders, eigendeck walks your registry top-to-bottom
+and picks the first server whose advertised kernels include the
+one the element asked for. Multiple servers offering the same
+kernel? Reorder them in Settings to change which one wins.</p>
+<p>The topbar shows a single <strong>status pill</strong> that aggregates how the
+servers your open deck needs are doing — green if they&#39;re all
+reachable and recent, yellow if any haven&#39;t been seen in a while,
+red if some kernel can&#39;t be matched at all. Click the pill for
+the per-server breakdown and a &quot;Refresh all&quot; button.</p>
+<h2>Why this design</h2>
+<p>Two real problems with the obvious alternative (&quot;store the URL and
+token in the deck&quot;):</p>
+<p><strong>URLs aren&#39;t portable.</strong> <code>http://localhost:8888</code> on your desktop
+and <code>http://localhost:8888</code> on your laptop are <em>different machines</em>.
+A deck that hard-codes the URL only works on whichever machine you
+wrote it on. The registry indirection lets you keep matching
+<code>label: &quot;Main&quot;</code> entries on both machines with the right local URL,
+and the deck just asks for <code>python3</code>.</p>
+<p><strong>Tokens shouldn&#39;t be in deck files.</strong> Decks get committed to git,
+emailed to collaborators, posted to talk websites. Auth artifacts
+in any of those places is a leak — at best it&#39;s noise (the
+recipient can&#39;t reach your <code>localhost:8888</code> anyway), at worst it&#39;s
+a real security issue if your Jupyter server is exposed (running
+with <code>--ServerApp.ip=0.0.0.0</code>). The registry keeps tokens on the
+machine they belong to, full stop.</p>
+<p>You can also have multiple machines where the <em>same</em> kernel
+(&quot;<code>python3</code>&quot;) means different environments. Maybe your laptop runs
+Pyodide-flavored CPython and your desktop runs Anaconda with CUDA.
+The registry makes that explicit — you pick the server, the deck
+just asks for a kernel.</p>
+<h2>Workflow</h2>
+<h3>One-time setup per machine</h3>
+<ol>
+<li><strong>Open Settings → Jupyter servers.</strong> (Cmd+, on macOS.)</li>
+<li><strong>Add server.</strong> Type a label that&#39;s meaningful to <em>you</em> (<code>Desktop main</code>, <code>GPU box</code>, <code>conference tunnel</code>). Paste the base URL
+(e.g. <code>http://localhost:8888</code>) and the token (from the terminal
+where you launched Jupyter — or leave empty if you ran with
+<code>--ServerApp.token=&#39;&#39;</code>).</li>
+<li><strong>Test connection.</strong> Confirms the URL + token are valid and
+populates the entry with the kernels the server advertises.</li>
+<li><strong>Reorder</strong> if you have multiple servers offering the same
+kernel. The first match wins.</li>
+</ol>
+<p>Settings are local-only. Re-do these once on each machine you
+present from.</p>
+<h3>Starting a token-less Jupyter server</h3>
+<p>If you don&#39;t want to copy a token every session, run with auth
+disabled. This is safe <strong>only on localhost</strong> — never on a server
+exposed to the network.</p>
+<pre><code>jupyter server --no-browser --port=8888 \
+  --ServerApp.token=&#39;&#39; \
+  --ServerApp.allow_origin=&#39;*&#39; \
+  --ServerApp.disable_check_xsrf=True
+</code></pre>
+<p>Then in Settings, add a server with that URL and an empty token
+field. Connection works without any further copy-pasting.</p>
+<h3>Reading the status pill</h3>
+<table>
+<thead>
+<tr>
+<th>Color</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🟢 green</td>
+<td>Every kernel the open deck needs is matched to a server reachable within the last 30 minutes</td>
+</tr>
+<tr>
+<td>🟡 yellow</td>
+<td>All kernels matched, but at least one server is stale (&gt;30 min since last successful contact). Click &quot;Refresh all&quot; to recheck.</td>
+</tr>
+<tr>
+<td>🔴 red</td>
+<td>At least one kernel the deck needs has <em>no matching server</em> in the registry. Open Settings to add one.</td>
+</tr>
+<tr>
+<td>(hidden)</td>
+<td>Either you&#39;re in PresentMode, or the open deck has no notebook elements at all.</td>
+</tr>
+</tbody></table>
+<p>Before a talk: open the deck, glance at the pill — green is the
+go signal. Click for the breakdown if you want to confirm which
+servers are matched to which kernels.</p>
+<h3>Adding a new machine</h3>
+<p>You sit down at a fresh laptop, install eigendeck, open your
+existing deck. Status pill shows red — there are no registered
+servers yet. Open Settings → Jupyter servers, add the laptop&#39;s
+local Jupyter, test, and you&#39;re back to green. The deck file
+itself didn&#39;t change.</p>
+<h3>Working through an SSH tunnel</h3>
+<pre><code># In a terminal, set up the tunnel:
+ssh -L 9999:cluster:8888 you@cluster
+</code></pre>
+<p>In Settings on your laptop:</p>
+<ul>
+<li>Label: &quot;Cluster via SSH&quot;</li>
+<li>URL: <code>http://localhost:9999</code></li>
+<li>Token: whatever the cluster&#39;s Jupyter prints</li>
+</ul>
+<p>Run a Jupyter on the cluster the same way you&#39;d run one locally.
+The label and notes fields are for <em>you</em> — eigendeck only cares
+about the URL, token, and kernel list.</p>
+<h2>Migration from older decks</h2>
+<p>Decks saved before this design carried <code>baseUrl</code> and <code>token</code> on
+notebook elements directly. Opening such a deck migrates the
+fields automatically: the URL + token are harvested into your
+local registry (labeled <code>Migrated &lt;host:port&gt;</code>), and the deck&#39;s
+copy of those fields is stripped on the next save. You don&#39;t have
+to do anything. Tokens that were previously in a deck file you
+already published are still leaked — rotate them on the Jupyter
+server side.</p>
+<h2>Common pitfalls</h2>
+<ul>
+<li><strong>Adding a server and not testing it.</strong> Without a &quot;Test
+connection&quot; pass, the registry has no <code>availableKernels</code> list,
+so the matcher will skip the entry. Always test after adding.</li>
+<li><strong>Stale entries hiding a real problem.</strong> A server that was
+reachable hours ago shows yellow until you refresh. Yellow
+before a talk is not green — click &quot;Refresh all&quot; in the pill
+dropdown so you know.</li>
+<li><strong>Multiple servers offering the same kernel, wrong one wins.</strong>
+First-in-the-list wins. Reorder in Settings → Jupyter servers.</li>
+<li><strong>Trying to put a token on the element via JSON edits.</strong> The
+field doesn&#39;t exist on the schema anymore. Add the server to
+the registry instead.</li>
+</ul>
+<h2>See also</h2>
+<ul>
+<li><code>docs/manual/text-sizes.md</code> — the other deck-level vs
+per-machine settings story.</li>
+<li><code>DESIGN_DECISIONS.md</code> &quot;Preferences cascade&quot; — the formal model
+the deck-level kernel cascade uses (kernel name only; server
+selection is a separate registry lookup, decoupled from the
+cascade).</li>
+<li><code>LLM-EDITING.md</code> — schema reference for <code>NotebookElement.kernel</code>
+and <code>PrefSchema.jupyterServers</code>.</li>
+</ul>
+</main></div>
+</body>
+</html>

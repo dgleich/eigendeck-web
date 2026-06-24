@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notebooks — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a class="active" href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Notebooks</h1>
+<h2>The rule</h2>
+<p>A <strong>notebook element</strong> puts a Jupyter notebook (<code>.ipynb</code>) on a slide.
+Eigendeck renders the cells as part of the slide, and — if a kernel is
+available — lets you run them live during a talk.</p>
+<p>The key idea: <strong>the <code>.ipynb</code> file is never modified.</strong> Everything you do to
+the notebook inside your deck — edit a cell, run it and capture its output,
+add a new cell on the fly — is saved as a <strong>recording</strong> attached to the
+element and stored <em>in the deck</em>, layered on top of the pristine source file.
+Open the deck later (even with no kernel running) and your edited code and
+captured outputs are right there.</p>
+<h2>The recording</h2>
+<p>The recording holds three things, all kept in the deck, none written back to
+the <code>.ipynb</code>:</p>
+<ul>
+<li><strong>cell edits</strong> — changes you make to a cell&#39;s source inside the deck;</li>
+<li><strong>recorded outputs</strong> — the result of running a cell, captured so it shows
+again next time without re-running;</li>
+<li><strong>added cells</strong> — cells you author live in the deck (they&#39;re not in the
+original file).</li>
+</ul>
+<p>This is what makes a notebook-driven talk <strong>reproducible and portable</strong>: the
+deck carries the exact code and results you presented, while your source
+<code>.ipynb</code> stays clean for everyday work in Jupyter.</p>
+<h2>Editable vs. file-watching</h2>
+<p>By default a notebook is read-only in the deck (you still run cells; you just
+can&#39;t retype them). Turn on <strong>Editable</strong> (per element in the Inspector, or as a
+global default in Settings → General) to edit cell source in place.</p>
+<p>Editing in the deck and watching the file on disk are at odds — a disk change
+would clobber your in-deck edits — so <strong>making a notebook editable turns off
+file-watching for it.</strong> When you <em>do</em> want the latest from disk, use the Asset
+section&#39;s <strong>Reload from disk</strong> (which intentionally discards the in-deck edits
+and pulls the current <code>.ipynb</code>).</p>
+<h2>Running cells — kernels</h2>
+<p>A notebook element only says <em>which kernel it needs</em> (e.g. <code>python3</code>). The
+actual server URL and token live in a per-machine registry, not in the deck.
+See <strong><a href="notebook-servers.html">Jupyter servers</a></strong> for how that works and what the
+topbar status pill means. Cells still display fine with no kernel — you only
+need one to <em>run</em> them.</p>
+<h2>Display options</h2>
+<p>Each notebook&#39;s Inspector lets you tailor how it appears on the slide:</p>
+<ul>
+<li><strong>Hide header</strong> (drop the kernel/title strip),</li>
+<li><strong>Syntax highlighting</strong> on/off,</li>
+<li><strong>Line numbers</strong> on/off (applies in both the static and editing views),</li>
+<li><strong>Hide markdown</strong> cells, <strong>show only certain cells</strong>, show a <strong>border</strong>,</li>
+<li><strong>Font size</strong> (the same named scale as text — see <a href="text-sizes.html">Text sizes</a>).</li>
+</ul>
+<h2>The same notebook on several slides</h2>
+<p>Duplicate a slide and the notebook becomes <strong>synced</strong> — it is <em>one</em> notebook
+shown on both slides, sharing <strong>one recording</strong>. Edit a cell or capture an
+output on either slide and both update; it stays one thing through save and
+reopen. To give instances independent positions for an animation, or to
+understand sync vs. link, see <strong><a href="sync-and-link.html">Sync and link</a></strong>. (When you
+<em>free</em> a synced notebook, it keeps its own copy of the recording; when you
+<em>promote</em> a link to a sync, the master&#39;s recording is the one that&#39;s kept.)</p>
+<p><strong>Copy carries the recording.</strong> Copy/paste or duplicate a notebook and its
+recording comes along: an independent or animation-linked copy gets its <strong>own
+copy</strong> of the recording (it can then diverge), while a copy that <strong>joins a sync
+group shares</strong> that group&#39;s single recording.</p>
+<h2>Previews</h2>
+<p>Wherever Eigendeck needs a small stand-in image of a notebook — the slide
+thumbnails in the sidebar, the link picker — it shows a cached picture of the
+rendered notebook, refreshed as you edit it, rather than a blank box.</p>
+<h2>Why this design</h2>
+<p>A talk should be <strong>reproducible without a live kernel</strong> and your source files
+should stay <strong>pristine</strong>. Recording the session into the deck (instead of
+editing the <code>.ipynb</code>) gives you both: you can rehearse, capture the outputs you
+want, and present the exact same thing weeks later on a laptop with nothing
+installed — while the notebook you keep iterating on in Jupyter is untouched.</p>
+</main></div>
+</body>
+</html>

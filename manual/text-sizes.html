@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text sizes — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a class="active" href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Text sizes</h1>
+<h2>The rule</h2>
+<p>A deck has one type scale, applied uniformly across all slides. Five
+named sizes:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Default</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>footnote</code></td>
+<td>24 px</td>
+<td>footnote text preset; small notebook cells</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>32 px</td>
+<td>annotation text preset; notebook cells (default)</td>
+</tr>
+<tr>
+<td><code>body</code></td>
+<td>48 px</td>
+<td>body and textbox text presets; large notebook cells</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>72 px</td>
+<td>title text preset; reserved for titles</td>
+</tr>
+<tr>
+<td><code>hype</code></td>
+<td>96 px</td>
+<td>hype text preset; reserved for hype</td>
+</tr>
+</tbody></table>
+<p>You can change any of these px values at the deck level — open the
+Inspector with no element selected, scroll to <strong>Text sizes (px)</strong> in
+the Presentation section, and edit the spinner for the size you want
+to adjust. The override propagates to every element in the deck that
+uses that named size.</p>
+<p>You can also override the size on an individual element. Every
+sized element — text and notebook — shows the same font-size widget
+in its inspector: three named buttons (<code>body / note / footnote</code>)
+plus a numeric spinner. Click a name to bind the element to the
+deck&#39;s scale at that size, or type a custom px value to pin it.
+This is the escape hatch for cases where the named scale doesn&#39;t
+fit, and it&#39;s the same control everywhere so you only learn it
+once.</p>
+<p>There is <strong>no slide-level text size override</strong>. This is intentional.</p>
+<p>The size applies to the <strong>whole element</strong> — you can&#39;t mix font sizes <em>within</em> a
+single text element. That, too, is intentional: it keeps the text inside an
+element harmonious. Need two sizes? Use two elements (a Title and a Body, say).</p>
+<h2>Why this design</h2>
+<p>A presentation reads as one document, not a sequence of independent
+slides. Inconsistent type sizes between slides break that read —
+audiences (and presenters reviewing their own decks) notice when
+&quot;body&quot; on slide 4 is visibly different from &quot;body&quot; on slide 5, even
+if neither one looks wrong on its own. Tooling that makes slide-by-
+slide size changes easy makes that drift the default; tooling that
+makes it harder makes consistency the default.</p>
+<p>The deck-level type scale is the constraint that delivers that
+consistency. Pick five sizes that work for the kind of talk you&#39;re
+giving — a lecture hall projection wants different numbers than a
+laptop walkthrough — and the rest of the deck inherits them. When
+you decide a title is too small, you change the title size <em>once</em>
+and every title slide updates.</p>
+<p>The per-element override exists because real talks have real
+exceptions: one slide where you genuinely need a smaller body cell
+to fit a long matrix, one notebook on one slide where you want a
+larger code font for emphasis. These are individual judgement calls,
+not slide-wide aesthetics, so they live on the element they apply
+to.</p>
+<p>A slide-level override would sit between those two: bigger blast
+radius than per-element, smaller than per-deck. It would be useful
+just often enough to <em>seem</em> like the right tool for the job, then
+silently produce inconsistent slides. We left it out so the choice
+stays binary: &quot;this is how the deck looks&quot; vs. &quot;this one element is
+a deliberate exception.&quot;</p>
+<h2>Workflow</h2>
+<p>There are two places to set the scale:</p>
+<ul>
+<li><strong>Per-deck</strong> (Inspector → Presentation section → Text sizes (px)) —
+applies to the currently open deck only. This is where you tune
+the scale for a specific talk.</li>
+<li><strong>Global / new-deck default</strong> (Eigendeck menu → Settings → Default
+text sizes) — seeds the scale for every NEW deck you create.
+Existing decks aren&#39;t touched; they keep whatever they were saved
+with. Use this when you&#39;ve found a scale you like and want it as
+the starting point for everything you make.</li>
+</ul>
+<p>Both editors show the built-in default beside each field so you
+always know what the value would be if you cleared the override.</p>
+<ol>
+<li><p><strong>Set the scale once.</strong> Open the Inspector with no element
+selected. Adjust <code>footnote / note / body / title / hype</code> in the
+<strong>Text sizes (px)</strong> section until the proportions look right on
+the kind of screen you&#39;ll present on. Default values are tuned
+for a 1920×1080 projection at conference distance. If you like
+the result and want it as your global starting point for future
+decks, copy the same values into the Settings dialog&#39;s Default
+text sizes section.</p>
+</li>
+<li><p><strong>Use the named sizes everywhere.</strong> Text presets already pick from
+the scale; you don&#39;t need to think about it. The same <code>body / note / footnote</code> picker appears on every sized element — click a
+name to bind that element to the deck&#39;s scale (overriding the
+preset for text, or the default <code>note</code> for notebooks).</p>
+</li>
+<li><p><strong>Reach for the numeric override sparingly.</strong> If you find yourself
+typing a custom px value on more than two or three elements per
+deck, the scale itself is probably wrong — go back to step 1 and
+adjust the deck-level value instead. That single change fixes
+every element at once and keeps the deck consistent.</p>
+</li>
+<li><p><strong><code>title</code> is reserved.</strong> It&#39;s only available to title text
+elements. Notebooks and other elements don&#39;t list it in their
+size picker. If you need title-sized text in a non-title element,
+use the numeric override — and ask yourself whether the element
+should actually be a title.</p>
+</li>
+</ol>
+<h2>Common pitfalls</h2>
+<ul>
+<li><p><strong>&quot;This one slide needs different sizes.&quot;</strong> Almost always either
+(a) the element needs a numeric override (one element, not the
+whole slide), or (b) the deck&#39;s scale is wrong (every slide is
+paying the cost; fix it once at the deck level). The third option
+— &quot;this slide is genuinely a different kind of slide&quot; — is rare
+enough that creating a <em>whole separate deck</em> and linking to it is
+usually a better answer than fragmenting your scale.</p>
+</li>
+<li><p><strong>Bumping a name to &quot;fix&quot; a single slide.</strong> If you change <code>body</code>
+from 48 to 56 because slide 12 looks cramped, every body-preset
+element on every slide jumps. Use a per-element override on slide
+12&#39;s element instead.</p>
+</li>
+<li><p><strong>Picking numbers from a designer&#39;s website.</strong> Most editorial type
+scales target a reading distance of two feet. Eigendeck talks
+default for projection at 20+ feet. The defaults are bigger than
+you think they should be on your laptop, and that&#39;s correct.</p>
+</li>
+</ul>
+<h2>See also</h2>
+<ul>
+<li><code>DESIGN_DECISIONS.md</code> &quot;Preferences cascade&quot; — the formal model for
+how deck → element resolution works (default-setting flavor).</li>
+<li><code>LLM-EDITING.md</code> — schema reference for <code>PresentationConfig.textSizes</code>
+and <code>NotebookElement.fontSizeName</code> / <code>fontSize</code>.</li>
+</ul>
+</main></div>
+</body>
+</html>

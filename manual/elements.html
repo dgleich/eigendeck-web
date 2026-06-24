@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elements — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a class="active" href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Elements</h1>
+<p>Every slide is a stack of <strong>elements</strong> you place on the canvas (their order is
+the z-order). Insert any of them from the <strong>Insert</strong> menu or the toolbar. This
+page is the quick tour; deeper topics link out.</p>
+<h2>Text elements</h2>
+<p>Text comes in <strong>presets</strong> — each is a starting style (size, weight, role), not a
+cage; you can restyle any of them per element.</p>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Role</th>
+<th>Default size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Title</strong></td>
+<td>slide titles</td>
+<td>72 px</td>
+</tr>
+<tr>
+<td><strong>Body</strong></td>
+<td>main content</td>
+<td>48 px</td>
+</tr>
+<tr>
+<td><strong>Text Box</strong></td>
+<td>free-floating text</td>
+<td>48 px</td>
+</tr>
+<tr>
+<td><strong>Note</strong></td>
+<td>smaller secondary text</td>
+<td>32 px</td>
+</tr>
+<tr>
+<td><strong>Footnote</strong></td>
+<td>fine print, sources</td>
+<td>24 px</td>
+</tr>
+<tr>
+<td><strong>Hype</strong></td>
+<td>a tilted yellow sticky note</td>
+<td>48 px</td>
+</tr>
+</tbody></table>
+<p>All text supports <strong>inline LaTeX</strong> with <code>$…$</code>, the format toolbar (bold/italic/…),
+and per-element colour, background panel, alignment, opacity, rotation, and
+shadow/glow effects. The sizes come from one deck-wide <a href="text-sizes.html">type scale</a>;
+fonts and math are covered in <a href="styles-and-fonts.html">styles and fonts</a>.</p>
+<blockquote>
+<p><strong>One size per text element.</strong> You can&#39;t mix font sizes <em>within</em> a single text
+element — the size is a property of the whole element (set by its preset, or
+overridden in the inspector). This is deliberate: it keeps the text inside an
+element visually harmonious. When you want a different size, use a separate
+element with the appropriate preset (e.g. a Title above a Body, a Footnote
+below). See <a href="text-sizes.html">text sizes</a>.</p>
+</blockquote>
+<h3>Annotation elements</h3>
+<p>The <strong>Note</strong> preset doubles as the annotation: smaller, italic, accent-coloured
+by default — for the &quot;move the slider →&quot; style callouts you point at things with.
+Pair it with an <strong>Arrow</strong> (below). See slides 9 and 19 of the
+<a href="building-a-presentation.html">Welcome walkthrough</a>.</p>
+<h2>Image elements</h2>
+<p>Raster (PNG/JPEG/WebP/GIF), <strong>SVG</strong>, and <strong>PDF</strong> — PDFs and SVGs are rasterized
+on demand and re-rendered crisply at any size. Images are embedded in the deck
+<em>and</em> watched on disk, so you can keep editing the source file. Options: shadow,
+rounded corners, opacity, rotation. See <a href="assets.html">watched assets</a>.</p>
+<h2>Arrow elements</h2>
+<p>A straight arrow with adjustable colour, stroke width, and head size — for
+pointing an annotation at the thing it describes.</p>
+<h2>Cover elements</h2>
+<p>A rectangle that <strong>defaults to the slide background colour</strong>, so it&#39;s an
+invisible mask — drop it over content you&#39;ll reveal on a later build slide, then
+remove it. You can also tint a cover any colour from the inspector (Color →
+<em>Match</em> keeps it invisible). Great with <a href="building-a-presentation.html#2-the-argument-with-build-slides-and-reveal-masks">build slides</a>.</p>
+<h2>Interactive elements</h2>
+<p>The heart of an interactive show-and-tell.</p>
+<ul>
+<li><strong>Demos</strong> — self-contained HTML, often split into multiple <strong>pieces</strong> (a plot,
+a control panel, an info box) you position separately; they talk over
+<code>BroadcastChannel</code>. Transparent over the slide and theme-aware. Make them in an
+LLM session — see <a href="building-demos-with-llms.html">Building demos with LLMs</a>.</li>
+<li><strong>Notebooks</strong> — real Jupyter notebooks on a slide, scrollable and editable
+<em>during</em> the talk (view-only in exported HTML). The deck records outputs
+without touching your source <code>.ipynb</code>. See <a href="notebooks.html">notebooks</a> and
+<a href="notebook-servers.html">Jupyter servers</a>.</li>
+<li><strong>Videos</strong> — local files (embedded + watched) or YouTube/Vimeo/PeerTube
+embeds, with loop/ping-pong/speed/autoplay/captions options. See
+<a href="videos.html">videos</a>.</li>
+</ul>
+<h2>Relating elements across slides</h2>
+<p>Two ways to connect an element to its counterpart on another slide:</p>
+<ul>
+<li><strong>Sync</strong> — the <em>same</em> element shown on several slides (shared position/content).</li>
+<li><strong>Link</strong> — two <em>separate</em> elements linked so the presenter animates between
+them.</li>
+</ul>
+<p>Both come from duplicating a slide; see <a href="sync-and-link.html">sync and link</a>.</p>
+</main></div>
+</body>
+</html>

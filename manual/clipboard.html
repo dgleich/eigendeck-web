@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cut, copy, and paste — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a class="active" href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Cut, copy, and paste</h1>
+<h2>The rule</h2>
+<p>What a paste does depends on <strong>where</strong> you paste and <strong>what&#39;s on the clipboard</strong>.</p>
+<p><strong>Pasting onto the canvas</strong> (nothing being edited) adds a new element:</p>
+<ul>
+<li><strong>An image, SVG, or PDF</strong> copied from another app (Excel, Pages, Preview, a
+browser, a screenshot) → inserted as an image element. Eigendeck reads the
+richest form available, preferring <strong>vector (SVG) → PDF → PNG/JPEG</strong>, so a
+chart copied from Office comes in as crisp vector art rather than a bitmap when
+the app offers both.</li>
+<li><strong>Rich HTML</strong> with no image on the clipboard — a <strong>Google Sheets / Excel
+range, a Google Docs or Word selection, a chunk of a web page</strong> → Eigendeck
+renders that HTML <strong>in your deck&#39;s font</strong> and drops it in as a <strong>picture</strong>
+(see below). This is how you get a spreadsheet table onto a slide.</li>
+<li>Otherwise (plain text only) → nothing is added to the canvas; paste into a
+text box instead.</li>
+</ul>
+<p><strong>Pasting into a text box</strong> (double-click to edit first) inserts <strong>text</strong>.
+Formatting from outside Eigendeck is dropped — you get clean plain text in the
+box&#39;s own style — <em>unless</em> the clipboard came from Eigendeck itself (copying a
+selection inside another text box keeps its bold/italic/super-/subscript/color).
+Use <strong>Edit → Paste without Formatting</strong> to force plain text even then.</p>
+<p>Copying and pasting <strong>whole elements</strong> (select, ⌘C, ⌘V) duplicates them; across
+slides this is also how you set up animations — see
+<a href="sync-and-link.html">Sync and link</a>.</p>
+<h2>HTML pastes become a picture</h2>
+<p>When you paste a table or other formatted HTML onto the canvas, Eigendeck:</p>
+<ol>
+<li>lays the HTML out in your <strong>deck body font</strong> (so it looks on-brand, not like
+whatever font the source used), then</li>
+<li><strong>screenshots it to an image</strong> and inserts that, centered.</li>
+</ol>
+<p>So a pasted table is a normal image element: it scales, moves, exports, and
+shows up in thumbnails like any other picture — no live spreadsheet, no surprise
+reflow when you present.</p>
+<p>What carries over: the cell text, <strong>bold / italic</strong>, text and background colors,
+alignment, and the <strong>borders you actually set</strong> in the source. What&#39;s
+intentionally replaced: the <strong>typeface</strong> (always your deck font).</p>
+<p>One honest caveat for Google Sheets: Sheets includes its faint <strong>default
+gridlines</strong> in the copied HTML even when you haven&#39;t set any borders, so an
+&quot;unbordered&quot; range pastes <em>with</em> that light grey grid. To control the lines,
+set (or clear) real borders in Sheets before copying — those render exactly as
+you set them.</p>
+<h2>The reasoning</h2>
+<p>A picture, not a live table, is a deliberate choice. A slide needs to look the
+same every time you present it and when you export to PDF or HTML; a rasterized
+snapshot is frozen and predictable, and it travels inside the deck with no
+external dependency. Rendering through the browser (rather than re-implementing
+spreadsheet layout) means <em>any</em> HTML works — lists, headings, quotes, mixed
+formatting — not just one app&#39;s tables. Forcing the deck font keeps pasted
+content consistent with the rest of your slides.</p>
+<h2>Workflow</h2>
+<ul>
+<li><strong>Spreadsheet table:</strong> select the range in Sheets/Excel, copy, click the slide
+(don&#39;t be editing a text box), paste. Resize the resulting image like any
+picture.</li>
+<li><strong>Want specific lines:</strong> set the borders in the spreadsheet first; clear them
+for a borderless look (mind the Sheets default-gridline caveat above).</li>
+<li><strong>Updating a pasted table:</strong> it&#39;s a snapshot, so re-copy from the source and
+paste again to replace it.</li>
+<li><strong>Just the text, no styling:</strong> paste into a text box instead of onto the
+canvas, or use <strong>Paste without Formatting</strong>.</li>
+</ul>
+</main></div>
+</body>
+</html>

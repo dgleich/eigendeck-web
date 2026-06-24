@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Styles and fonts — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a class="active" href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Styles and fonts</h1>
+<p>Eigendeck ships a curated set of fonts — and the thing that makes it good for
+technical talks is that <strong>each text font is paired with a matching math font</strong>.
+When you set a slide in Computer Modern Concrete, the equations render in Euler
+to match; set it in Shantell Sans and the math looks hand-drawn too.</p>
+<h2>Fonts</h2>
+<p>Ten text-font families, each with a matching MathJax math pack:</p>
+<blockquote>
+<p>PT Sans · Lato · Libertinus · Libertinus Sans · Computer Modern Sans ·
+Noto Sans · Source Sans 3 · Source Code Pro · Shantell Sans · Computer Modern
+Concrete</p>
+</blockquote>
+<p>plus monospace <strong>code fonts</strong> (no math): Fira Code, IBM Plex Mono, Inconsolata,
+JetBrains Mono, PT Mono, Computer Modern Typewriter.</p>
+<p><strong>Setting fonts.</strong> The deck has a default font (Presentation properties); any
+slide can override it (Slide inspector → Body / Title font). The
+<strong>Welcome</strong> deck&#39;s slides 14–18 are the same content in four different fonts to
+show this off — build the slide once, duplicate, and change the font + theme on
+each copy.</p>
+<h2>Math (MathJax)</h2>
+<p>Type LaTeX inline with <code>$…$</code> (or <code>$$…$$</code> for display). It renders as SVG in the
+slide&#39;s font. Because the math font tracks the text font, an equation always
+looks like it belongs on the slide.</p>
+<p><strong>Macros.</strong> Define reusable macros once for the whole deck (Presentation
+properties → math preamble) — e.g. <code>\mA</code> for a bold <strong>A</strong>, <code>\vp</code> for a vector
+<em>p</em>. Then use them anywhere math appears. The Welcome deck does this heavily.</p>
+<h2>Themes</h2>
+<p>A <strong>theme</strong> sets the slide&#39;s background and the default text/accent colours.
+Built-in themes: <strong>white</strong>, <strong>light</strong>, <strong>dark</strong>, <strong>black</strong>. Set the deck default
+in Presentation properties, override per slide in the Slide inspector. Demos and
+covers pick up the resolved theme automatically.</p>
+<h2>Text styling</h2>
+<p>Per-element styling lives in the inspector when a text element is selected:</p>
+<ul>
+<li><strong>Text colour</strong> and <strong>background colour</strong> (a panel behind the text), each with
+a palette + custom picker.</li>
+<li><strong>Vertical alignment</strong>, <strong>opacity</strong>, <strong>rotation</strong>.</li>
+<li><strong>Text effects</strong> — shadow / glow — for legibility over busy backgrounds.</li>
+<li>The format toolbar (bold/italic/etc.) for inline runs.</li>
+</ul>
+<p>See also <a href="text-sizes.html">text sizes</a> for the named type scale (footnote / note /
+body / title / hype) and how to change it deck-wide.</p>
+</main></div>
+</body>
+</html>

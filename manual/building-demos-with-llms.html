@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building demos with LLMs — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a class="active" href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Building demos with LLMs</h1>
+<p>The interactive pieces in a talk — a force-directed graph you can drag, a
+Schrödinger simulation with a field-strength slider, a molecule viewer — are
+usually one-off visualizations. Writing each by hand is slow. An LLM (Claude,
+etc.) can produce a working one in a single session, and Eigendeck is built to
+drop that result straight onto a slide.</p>
+<p>Every interactive demo in the built-in <strong>Welcome to Eigendeck</strong> deck was made
+this way.</p>
+<h2>The shape of an Eigendeck demo</h2>
+<p>A demo is a <strong>single self-contained HTML file</strong>. It runs in a sandboxed iframe
+over the slide and can be split into <em>pieces</em> — separate viewports (a plot, a
+control panel, an info box) that you position independently on the slide and that
+talk to each other over <code>BroadcastChannel</code>. Eigendeck scans the HTML for the
+piece names you reference and creates a positionable element for each.</p>
+<p>The full contract — the file template, the controller/piece/standalone roles,
+how export works, and the rules that keep a demo robust — is in
+<strong><a href="https://github.com/dgleich/eigendeck/blob/main/DEMO_AUTHORING.md" target="_blank" rel="noopener"><code>DEMO_AUTHORING.md</code></a></strong> at the repo root. That file is
+also what you hand an LLM: it&#39;s installable from the app via <strong>File → Install LLM
+Tools…</strong>, which drops the authoring guide and a starter demo where an
+LLM/agent working in your project can read them.</p>
+<h2>A workflow that works</h2>
+<ol>
+<li><strong>Describe the demo to the LLM</strong>, and point it at <code>DEMO_AUTHORING.md</code> (or run
+<em>Install LLM Tools…</em> first so it&#39;s in the project). Ask for a single HTML
+file following that guide — including the piece names you want as separate
+slide elements.</li>
+<li><strong>Save the HTML</strong> the LLM produces.</li>
+<li><strong>Add it to a slide</strong>: Insert → Demo (HTML)…, pick the file. Eigendeck reads
+the <code>piece === &#39;…&#39;</code> checks and creates one element per piece; arrange them on
+the slide.</li>
+<li><strong>Iterate.</strong> The file is <em>watched</em> — edit it (or have the LLM revise it) and
+the slide reloads. See <a href="assets.html">watched assets</a>.</li>
+</ol>
+<h2>Make demos match the deck</h2>
+<p>Two rules let a demo blend into your slides automatically:</p>
+<ul>
+<li><strong>Don&#39;t paint a background</strong> — a demo iframe is transparent, so the slide&#39;s
+background shows through and the demo matches every theme for free.</li>
+<li><strong>Use the injected theme variables</strong> for any text/controls: <code>var(--eigendeck-fg)</code>,
+<code>--eigendeck-bg</code>, <code>--eigendeck-accent</code>, <code>--eigendeck-font</code>, etc. Eigendeck
+injects the deck&#39;s resolved fonts + colors into every demo, live. Control
+labels and canvas text should track these so they stay legible on light <em>and</em>
+dark slides.</li>
+</ul>
+<p>Both are covered in detail (with a worked example) in the &quot;Matching the deck&quot;
+section of <a href="https://github.com/dgleich/eigendeck/blob/main/DEMO_AUTHORING.md" target="_blank" rel="noopener"><code>DEMO_AUTHORING.md</code></a>.</p>
+<h2>Configurable demos</h2>
+<p>If you want one demo file to show different content on different slides, read a
+parameter from the URL hash or use the piece name — see the <code>gimmicks</code> example in
+<code>example-demos/</code> for a tiny demo whose displayed word is configurable.</p>
+</main></div>
+</body>
+</html>

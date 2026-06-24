@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Philosophy: show *and* tell — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a class="active" href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Philosophy: show <em>and</em> tell</h1>
+<p>Eigendeck exists to build <strong>interactive show-and-tell sessions</strong> — talks where
+you don&#39;t just describe an idea, you <em>demonstrate</em> it live, in front of the
+audience, and can poke at it as questions come up.</p>
+<h2>Show, don&#39;t (only) tell</h2>
+<p>Film has a rule: <em>show, don&#39;t tell</em>. It doesn&#39;t quite work for scientific talks —
+we genuinely need to tell: define the notation, state the theorem, walk the
+argument. So the goal isn&#39;t to replace telling. It&#39;s to <strong>show as well</strong>.</p>
+<p>A traditional slide deck inherits its shape from the 1960s slide projector: a
+fixed sequence of static images. That was the only option when the &quot;computer&quot;
+was a carousel of photographic slides. But the machine in front of you can run a
+simulation, lay out a graph, evaluate a model, and respond to a slider — <em>during</em>
+the talk. Eigendeck is built around that: a slide can hold a live, interactive
+demo right next to the math that explains it.</p>
+<p>The result is a talk where you can say &quot;and if we increase the field strength…&quot;
+and then actually drag the slider and let the audience watch what happens.</p>
+<h2>What this means in practice</h2>
+<p>A few beliefs shape how the tool works:</p>
+<ul>
+<li><strong>A slide is a stage, not a snapshot.</strong> Slides hold live elements — demos,
+notebooks, videos — alongside text and math, not just pictures of them.</li>
+<li><strong>The technical content is first-class.</strong> Real LaTeX via MathJax, a curated set
+of fonts each paired with a matching math font, so an equation on a Shantell
+slide looks like it belongs there.</li>
+<li><strong>Authoring should be direct.</strong> WYSIWYG on a canvas: drag things where you want
+them, type math inline, drop in an image or a Jupyter notebook.</li>
+<li><strong>The demos come from anywhere — including LLMs.</strong> Many of the interactive
+pieces in a modern talk are quick one-off visualizations. Building those by
+hand is slow; building them with an LLM is fast. Eigendeck embeds plain HTML
+demos, so an LLM session is a perfectly good way to produce one. See
+<a href="building-demos-with-llms.html">Building demos with LLMs</a>.</li>
+<li><strong>Your deck stays yours.</strong> Decks are self-contained files; assets you add are
+embedded <em>and</em> live-watched on disk, so you can keep editing the source.</li>
+</ul>
+<h2>Where to go next</h2>
+<ul>
+<li><a href="building-a-presentation.html">Building a presentation</a> — a slide-by-slide
+walkthrough of the built-in <strong>Welcome to Eigendeck</strong> deck, showing how each
+slide was constructed.</li>
+<li><a href="building-demos-with-llms.html">Building demos with LLMs</a> — how to produce the
+interactive pieces.</li>
+<li>The <a href="index.html#elements--features">elements &amp; features reference</a> — the
+building blocks (text, annotations, interactive elements, styles &amp; fonts,
+watched assets, …).</li>
+</ul>
+</main></div>
+</body>
+</html>

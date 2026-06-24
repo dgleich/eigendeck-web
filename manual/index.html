@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eigendeck manual — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a class="active" href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Eigendeck manual</h1>
+<p>A user-facing guide to building talks in Eigendeck. Start with the philosophy,
+then build your first deck, then dig into individual elements and features.</p>
+<blockquote>
+<p>Different from <code>DESIGN_DECISIONS.md</code> and the other top-level <code>*.md</code> docs —
+those explain implementation choices to people reading the code. The manual
+explains <em>editorial</em> choices to people building presentations.</p>
+</blockquote>
+<h2>Start here</h2>
+<ul>
+<li><strong><a href="philosophy.html">Philosophy</a></strong> — what Eigendeck is <em>for</em>: building interactive
+show-and-tell sessions where you demonstrate ideas live, not just describe them.</li>
+<li><strong><a href="building-a-presentation.html">Building a presentation</a></strong> — a slide-by-slide
+walkthrough of the built-in <strong>Welcome to Eigendeck</strong> deck, with screenshots,
+showing how each slide was constructed.</li>
+<li><strong><a href="building-demos-with-llms.html">Building demos with LLMs</a></strong> — how to produce the
+interactive pieces that make a talk show-and-tell.</li>
+</ul>
+<h2>Elements &amp; features</h2>
+<p>A run-through of the building blocks:</p>
+<ul>
+<li><strong><a href="elements.html">Elements</a></strong> — the full set: text presets (title / body /
+textbox / note / footnote / hype), annotations, images, arrows, covers, and the
+interactive elements (demos, notebooks, videos).</li>
+<li><strong><a href="styles-and-fonts.html">Styles and fonts</a></strong> — the ten font families (each with
+a matching math font), MathJax + macros, themes, and per-element text styling.</li>
+<li><strong><a href="text-sizes.html">Text sizes</a></strong> — the named type scale and why slide-level
+overrides don&#39;t exist.</li>
+<li><strong><a href="building-demos-with-llms.html">Interactive demos →</a></strong> — see the LLM guide above;
+the full authoring contract is <a href="https://github.com/dgleich/eigendeck/blob/main/DEMO_AUTHORING.md" target="_blank" rel="noopener"><code>DEMO_AUTHORING.md</code></a>.</li>
+<li><strong><a href="notebooks.html">Notebooks</a></strong> — embedding Jupyter notebooks, in-deck recording
+(your source file is never touched), editable vs. file-watching, display
+options, and syncing a notebook across slides.</li>
+<li><strong><a href="notebook-servers.html">Jupyter servers</a></strong> — the per-machine kernel-server
+registry, why deck files don&#39;t carry URLs or tokens, and the topbar status pill.</li>
+<li><strong><a href="videos.html">Videos</a></strong> — local video files (embedded + watched) vs.
+YouTube/Vimeo/PeerTube embeds, the playback options, and how thumbnails/export
+work.</li>
+<li><strong><a href="assets.html">Watched assets</a></strong> — how files you add are embedded <em>and</em>
+live-watched, the Watch cascade (global → deck → per-asset), &quot;editable = take
+control&quot; for notebooks, and Reload-from-disk.</li>
+<li><strong><a href="sync-and-link.html">Sync and link</a></strong> — the two ways to relate elements across
+slides (sync unifies, link animates), the duplicate→free→move animation
+workflow, the S/A badges, promoting a link to a sync, and what copy/paste does.</li>
+<li><strong><a href="clipboard.html">Cut, copy, and paste</a></strong> — what paste does on the canvas vs.
+in a text box, pasting images/SVG/PDF, and pasting a spreadsheet/HTML selection
+as a deck-font picture.</li>
+</ul>
+<p>(More topics are added as features land.)</p>
+<h2>How to read this</h2>
+<p>Each topic page starts with the rule (what the tool does), then the reasoning
+(why it does that), then the workflow (how to live with it well). If a topic
+explains a constraint you find frustrating, read past the rule — the reasoning is
+usually the point.</p>
+</main></div>
+</body>
+</html>

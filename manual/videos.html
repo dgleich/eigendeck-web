@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Videos — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a class="active" href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Videos</h1>
+<h2>The rule</h2>
+<p>A <strong>video element</strong> puts a movie on a slide. There are two kinds:</p>
+<ul>
+<li><strong>A local file</strong> — pick a video file (mp4 / webm / mov / …) or <strong>drag it onto
+the canvas</strong>. The bytes are embedded in the deck, exactly like an image, so the
+deck stays self-contained. (Videos are big: Eigendeck warns before embedding
+anything over <strong>250 MB</strong>.) The file is also <strong>watched</strong> — re-export or replace
+it on disk and the slide reloads it.</li>
+<li><strong>An embed by URL</strong> — paste a <strong>YouTube, Vimeo, or PeerTube</strong> link. Nothing is
+downloaded into the deck; the provider&#39;s player is embedded and the video
+streams at play time (so embeds need a network connection when you present).</li>
+</ul>
+<p>Add either with the <strong>&quot;+ Video&quot;</strong> button (it asks for a file or a URL) or by
+dragging a video file in.</p>
+<h2>Playback options</h2>
+<p>In the Inspector (select the video):</p>
+<ul>
+<li><strong>Loop</strong> — play forever.</li>
+<li><strong>Ping-pong</strong> — <em>files only:</em> play forward, then backward, repeat. This is
+best-effort — video has no true reverse playback, so it&#39;s smooth only for
+<strong>short clips</strong> (it reverse-seeks frame by frame).</li>
+<li><strong>Speed</strong> — 0.25×–2×. For files this is exact; for embeds it&#39;s applied through
+each provider&#39;s player API, so treat it as best-effort.</li>
+<li><strong>Autoplay</strong> — start when the slide appears in present mode. Browsers only
+allow autoplay when <strong>muted</strong>, so autoplay forces mute.</li>
+<li><strong>Show controls</strong> — show the player&#39;s controls bar. <strong>On by default</strong>, so a
+newly added video is immediately playable. Turn it off for a chrome-free look:
+a file video can still be started by <strong>clicking it</strong> (play/pause); for embeds
+(YouTube/Vimeo/PeerTube) controls are kept whenever autoplay is off anyway —
+otherwise there&#39;d be no way to start the video (PeerTube hides its play button
+when controls are suppressed), so pair &quot;controls off&quot; with <strong>Autoplay</strong> for a
+truly chrome-free embed.</li>
+<li><strong>Muted</strong> — start with sound off.</li>
+<li><strong>Captions</strong> — <em>files:</em> attach a <strong>WebVTT (<code>.vtt</code>)</strong> subtitle file (browsers
+can&#39;t read subtitles baked into the video container, so captions come from this
+sidecar). <em>Embeds:</em> turns on the provider&#39;s captions, best-effort.</li>
+</ul>
+<p>Toggles default <strong>off</strong> except <strong>Show controls</strong> (on), and speed defaults to <strong>1×</strong>.</p>
+<h2>Thumbnails and export</h2>
+<p>The slide-sidebar thumbnail shows a <strong>poster frame</strong> of a file video (captured
+automatically) or the <strong>provider thumbnail</strong> of an embed. Static/PDF export uses
+that same cached image — so a file video exports as its poster frame with no
+slide flip-through. Embeds can&#39;t be screenshotted offline (cross-origin), so in
+an offline export they fall back to a placeholder box.</p>
+<h2>Why</h2>
+<p>Local files are embedded (not linked) so a deck you hand to someone else just
+works — same reasoning as images. Embeds are the opposite trade: tiny deck, but
+they depend on the network and the provider. Pick by how you&#39;ll present.</p>
+<p>Reverse playback and embed speed are &quot;best-effort&quot; on purpose: the browser
+doesn&#39;t give us a clean way to do either, so rather than hide the options we
+expose them and tell you the limits here.</p>
+</main></div>
+</body>
+</html>

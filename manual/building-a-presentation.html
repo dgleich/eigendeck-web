@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building a presentation — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a class="active" href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Building a presentation</h1>
+<p>The best way to learn Eigendeck is to see how a real deck is put together. This
+walkthrough follows the built-in <strong>Welcome to Eigendeck</strong> deck slide by slide and
+explains how each one was constructed — which elements, which presets, and the
+techniques (build slides, reveal masks, sync/link, per-slide fonts) behind them.</p>
+<blockquote>
+<p>Open the deck yourself to follow along: it ships in <code>examples/welcome.eigendeck</code>.
+Every screenshot below is that slide as it appears in the editor.</p>
+</blockquote>
+<p>The deck has a simple arc: <strong>introduce the idea</strong> (show <em>and</em> tell) → <strong>make the
+argument</strong> → <strong>prove it with three live demos</strong> → <strong>tour the features</strong> → <strong>peek
+behind the curtain</strong> → <strong>sign off</strong>.</p>
+<hr>
+<h2>The editor at a glance</h2>
+<p><img src="images/welcome/editor-element-inspector.png" alt="The Eigendeck editor — toolbar, canvas, and the Element inspector"></p>
+<p>Four regions, every time:</p>
+<ul>
+<li><strong>Slide sidebar (left)</strong> — every slide as a thumbnail; drag to reorder,
+right-click for Duplicate / Build Slide / Delete.</li>
+<li><strong>Insert toolbar (top)</strong> — one button per element type (Title, Body, Text,
+Note, Footnote, Arrow, Cover, Image, Hype, Demo, Notebook, Video). The same
+items live in the <strong>Insert</strong> menu.</li>
+<li><strong>Canvas (center)</strong> — the 1920×1080 slide. Drag elements freely; the selected
+one shows a handle box (and small <strong>S / A / L</strong> badges if it&#39;s synced, animated,
+or linked across slides).</li>
+<li><strong>Inspector (right)</strong> — three tabs: <strong>Deck</strong> (presentation-wide settings —
+default fonts, theme, text sizes, math macros), <strong>Slide</strong> (this slide&#39;s theme
+and fonts), and <strong>Element</strong> (the selected element&#39;s properties). It&#39;s open by
+default; toggle it with <strong>View → Toggle Inspector</strong>.</li>
+</ul>
+<h3>Colouring text — and the math comes along</h3>
+<p>The screenshot above has the body element selected, so the inspector shows the
+<strong>Element</strong> tab. The <strong>Text Color</strong> control sets the colour of the whole
+element — and because inline math renders in the current text colour, <em>the
+equations recolour with it</em>. That&#39;s how the red <code>Φ</code> and the blue &quot;graph&quot; on this
+slide are done:</p>
+<ul>
+<li><strong>A whole element</strong> — pick a swatch (or a custom colour) under <strong>Text Color</strong>.</li>
+<li><strong>Just a phrase (and its math)</strong> — select the run while editing and use the
+format toolbar&#39;s colour; MathJax inside that run picks up the colour too. The
+<strong>Clear inline</strong> button removes those per-run colours and returns the element
+to one uniform colour.</li>
+</ul>
+<p>The same panel carries <strong>Background</strong> (a panel behind the text), <strong>Effect</strong>
+(shadow / glow for legibility over busy slides), vertical alignment, rotation,
+and <strong>Position &amp; Size</strong>.</p>
+<hr>
+<h2>1. Title and the &quot;show / tell&quot; opening (slides 1–3)</h2>
+<p><img src="images/welcome/slide-00.png" alt="Slide 1 — Welcome to Eigendeck"></p>
+<p><strong>Slide 1</strong> is the simplest thing in Eigendeck: a <strong>Title</strong> text element, a
+<strong>Text Box</strong> below it, and an <strong>image</strong> (the logo SVG). Insert each from the
+<strong>Insert</strong> menu (or the toolbar), then drag them into place on the canvas. The
+title uses the <code>title</code> preset; the sentence uses <code>textbox</code>. The logo is an SVG
+dropped in via Insert → Image — Eigendeck embeds it in the deck <em>and</em> keeps
+watching the file on disk so you can re-edit it (see <a href="assets.html">watched assets</a>).</p>
+<p><strong>Slide 2 (&quot;… Show …&quot;)</strong> puts a live <strong>demo</strong> next to a one-word title — the
+&quot;show&quot; half. The demo is split into two <em>pieces</em> (a plot and a panel) positioned
+separately. <strong>Slide 3 (&quot;… And Tell …&quot;)</strong> is the &quot;tell&quot; half: a title plus a
+<strong>body</strong> element containing real LaTeX (<code>$\vp_1,\dots,\vp_N$ …</code>) rendered by
+MathJax. Type math inline with <code>$…$</code>; it renders in the slide&#39;s font.</p>
+<blockquote>
+<p>The <code>\vp</code>, <code>\mX</code> etc. are <strong>macros</strong> defined once for the deck (Presentation
+properties → math preamble) so you can reuse them everywhere.</p>
+</blockquote>
+<h2>2. The argument, with build slides and reveal masks (slides 4–8)</h2>
+<p>These slides make the case that slide decks inherited a &quot;static projector&quot; shape
+and that computers can do more. Two techniques carry them:</p>
+<ul>
+<li><strong>Build slides (slide groups).</strong> Slides 4–5 and 6–8 are <em>groups</em> — a base slide
+plus &quot;build&quot; copies that share numbering and reveal more each step. Duplicate a
+slide as a <strong>Build Slide</strong> (Slide menu, or right-click in the sidebar) and add
+the next piece; in presentation they advance as one numbered step.</li>
+<li><strong>Cover rectangles as reveal masks.</strong> A <strong>Cover</strong> element is a rectangle that
+defaults to the slide background colour, so it&#39;s invisible — drop it over text
+you want to reveal later, then remove it on the next build slide. (You can also
+tint a cover any colour from the inspector.)</li>
+</ul>
+<p><img src="images/welcome/slide-06.png" alt="Slide 6 — history + a live demo revealed"></p>
+<p>Slide 6 adds a <strong>demo</strong> to the group: the same text, now with an interactive
+piece appearing alongside it. That&#39;s a build slide doing its job — the audience
+sees the point made, <em>then</em> the demonstration.</p>
+<h2>3. Three live demos (slides 9–11)</h2>
+<p>This is the heart of the deck — three interactive demos, each made in an LLM
+session and dropped onto a slide. See <strong><a href="building-demos-with-llms.html">Building demos with LLMs</a></strong>
+for exactly how these are produced.</p>
+<p><img src="images/welcome/slide-08.png" alt="Slide 9 — Harper&#39;s electron simulation with a slider"></p>
+<p><strong>Slide 9 — Harper&#39;s electron.</strong> A Schrödinger simulation. The demo is split into
+a <code>probability</code> heatmap piece and a <code>controls</code> piece (the slider). They&#39;re
+positioned independently and communicate over <code>BroadcastChannel</code>. The slide adds
+a <strong>Text Box</strong> with the governing equation <code>$$\frac{dx}{dt} = -i\mL x$$</code>, an
+<strong>annotation</strong> (&quot;Move the slider…&quot;), and an <strong>arrow</strong> pointing at the control.
+Note the slide&#39;s <strong>theme is black</strong> — set per-slide in the Slide inspector — and
+the demo&#39;s controls automatically adopt readable colours via the injected theme
+variables.</p>
+<p><strong>Slide 10 — caffeine / adenosine.</strong> A molecule <code>viewer</code> piece plus a <code>panel</code>.
+<strong>Slide 11 — graph community structure.</strong> Three pieces (<code>graph</code>, <code>controls</code>,
+<code>info</code>) with a <strong>footnote</strong> explaining what you&#39;re exploring. Same pattern:
+multiple pieces from one HTML file, arranged on the slide.</p>
+<h2>4. The pitch and the feature tour (slides 12–18)</h2>
+<p><strong>Slide 12</strong> is a plain statement (&quot;Talks should show and tell&quot;). <strong>Slide 13</strong>
+lists features. Then <strong>slides 14–18</strong> are the same math-heavy slide repeated in
+<strong>four different fonts</strong> — Libertinus, Computer Modern Sans, Computer Modern
+Concrete, and Shantell Sans — each with its own theme:</p>
+<p><img src="images/welcome/slide-13.png" alt="Slide 14 — the same slide, four fonts"></p>
+<p>To make these, build the slide once, then <strong>duplicate</strong> it and change the
+<strong>Theme</strong> and <strong>Body font</strong> in the <strong>Slide</strong> inspector tab:</p>
+<p><img src="images/welcome/editor-slide-inspector.png" alt="The Slide inspector — theme and per-slide fonts"></p>
+<p>Each font ships with a <em>matching</em> MathJax math font, so the equations re-render to
+belong with the text — the math on the Shantell slide looks hand-drawn too. The
+Shantell slide adds an <strong>annotation</strong> giving the author&#39;s honest take on it. See
+<a href="styles-and-fonts.html">styles and fonts</a>.</p>
+<h2>5. Behind the curtain (slides 19–20)</h2>
+<p><img src="images/welcome/slide-18.png" alt="Slide 19 — a screenshot of the editor, annotated"></p>
+<p>These slides show <em>the editor itself</em> — a raster <strong>image</strong> screenshot of
+Eigendeck — with an <strong>annotation</strong> and an <strong>arrow</strong> pointing at a math macro in
+the inspector. A nice trick for a tool talk: screenshot your own UI, drop it in
+as an image, and annotate it with arrows and notes.</p>
+<h2>6. Notebooks (slides 21–22)</h2>
+<p><img src="images/welcome/slide-21.png" alt="Slide 21 — a live Jupyter notebook on a slide"></p>
+<p><strong>Slide 22</strong> embeds a real <strong>Jupyter notebook</strong> element — scrollable, and editable
+<em>during the talk</em> (it&#39;s view-only in the exported HTML). A <strong>hype</strong> note (the
+sticky-note preset) tells the audience to scroll. Eigendeck records the notebook
+in the deck without touching your source file; see <a href="notebooks.html">notebooks</a>.</p>
+<h2>7. Credits and sign-off (slides 23–24)</h2>
+<p><strong>Slide 23</strong> credits the open-source software and fonts Eigendeck is built on.
+<strong>Slide 24</strong> is a closing Text Box and the logo again — mirroring the opening.</p>
+<hr>
+<h2>What you just learned</h2>
+<p>Putting this deck together exercises essentially the whole toolset:</p>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Where</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Text presets (title / body / textbox / note / footnote / hype)</td>
+<td>throughout</td>
+<td><a href="index.html#elements--features">elements</a></td>
+</tr>
+<tr>
+<td>Inline LaTeX + deck math macros</td>
+<td>slides 3, 9, 13–18</td>
+<td><a href="styles-and-fonts.html">styles and fonts</a></td>
+</tr>
+<tr>
+<td>Interactive demos (multi-piece)</td>
+<td>slides 2, 6, 9–11</td>
+<td><a href="building-demos-with-llms.html">building demos with LLMs</a></td>
+</tr>
+<tr>
+<td>Build slides / slide groups</td>
+<td>slides 4–8</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cover rectangles as reveal masks</td>
+<td>slides 4, 6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Annotations + arrows</td>
+<td>slides 9, 19</td>
+<td><a href="index.html#elements--features">elements</a></td>
+</tr>
+<tr>
+<td>Per-slide fonts + themes</td>
+<td>slides 14–18</td>
+<td><a href="styles-and-fonts.html">styles and fonts</a></td>
+</tr>
+<tr>
+<td>Images (SVG + raster), watched on disk</td>
+<td>slides 1, 19, 24</td>
+<td><a href="assets.html">watched assets</a></td>
+</tr>
+<tr>
+<td>Jupyter notebooks</td>
+<td>slide 22</td>
+<td><a href="notebooks.html">notebooks</a></td>
+</tr>
+</tbody></table>
+<p>Then make it your own — change the text, swap the demos, pick your fonts.</p>
+</main></div>
+</body>
+</html>

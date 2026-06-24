@@ -10,6 +10,20 @@ Repo: https://github.com/dgleich/eigendeck-web
 python3 -m http.server 8000
 ```
 
+## Manual (`/manual`, `/learning`)
+
+The manual pages under `manual/` and `learning/` are **generated** from the
+markdown source in the main repo (`dgleich/eigendeck`, `docs/manual/`). Don't
+hand-edit them here. To rebuild after editing the source:
+
+```bash
+# in a checkout of dgleich/eigendeck, with this repo cloned alongside as ./website
+node tools/build-manual.mjs
+cd website && git add -A && git commit -m "manual: rebuild" && git push
+```
+
+`manual.css` (the manual/learning styling) *is* maintained here.
+
 ## Setup (completed)
 
 ### Cloudflare Pages

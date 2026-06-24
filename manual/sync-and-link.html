@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sync and link — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a class="active" href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Sync and link</h1>
+<h2>The rule</h2>
+<p>Two elements on different slides can be related in two — and only two —
+ways, and they mean different things:</p>
+<ul>
+<li><strong>Sync</strong> = <em>the same element, shown on several slides.</em> Edit it once and
+every copy updates: same text, same picture, same position. This is for
+information you want to repeat — a running title, a logo, a standing
+example you keep referring back to.</li>
+<li><strong>Link</strong> = <em>an animation.</em> The same-looking element sits at a <strong>different
+position</strong> on each slide, and the presenter glides it from one spot to the
+next as you advance. This is for build-ups and motion. The two elements
+stay independent — only their movement is tied together.</li>
+</ul>
+<p>A short way to remember it: <strong>sync unifies, link animates.</strong></p>
+<p>The most important consequence: <strong>position follows sync, not link.</strong> Synced
+copies always share a position — move one, they all move. A link never moves
+anything on its own; it only animates between positions you set yourself.</p>
+<h2>How you make each one</h2>
+<ul>
+<li><strong>Sync</strong> comes from <strong>duplicating a slide</strong> (right-click a slide thumbnail →
+Duplicate, or <code>Cmd/Ctrl+D</code> on the thumbnail). Every element on the copy is
+synced to its original. They&#39;re now one thing on two slides.</li>
+<li><strong>Link</strong> comes from the <strong>&quot;L&quot; button</strong> on a selected element (&quot;link to an
+element on another slide&quot;). It opens a picker; click the target on another
+slide and the two are linked for animation. Linking is <strong>non-destructive</strong> —
+it never merges or changes content, it only sets up the animation.</li>
+</ul>
+<h2>Making an animation (the one workflow worth memorising)</h2>
+<p>Because synced copies share a position, you can&#39;t animate them directly. The
+move is: <strong>duplicate → free → move.</strong></p>
+<ol>
+<li>Duplicate the slide so the element is on both (synced, same spot).</li>
+<li>On the second slide, select the element and click the <strong>&quot;S&quot; badge</strong> to
+<strong>Free Position</strong> — it stops being synced but stays part of the animation.</li>
+<li>Drag it to its new spot. In presenter mode, advancing the slide now
+animates the element from the first position to the second.</li>
+</ol>
+<h2>The badges</h2>
+<p>Select an element and two little badges may appear:</p>
+<ul>
+<li><strong>S (sync).</strong> Green = synced; click to <strong>free</strong> this copy&#39;s position. Grey =
+either freed (click to <strong>re-sync</strong>) <strong>or</strong> animation-linked-but-not-synced
+(click to <strong>promote</strong> the link to a sync — see below).</li>
+<li><strong>A (animation).</strong> Purple = animated; click to <strong>unlink</strong>. Grey = click to
+<strong>re-link</strong>.</li>
+</ul>
+<h2>Promoting a link to a sync</h2>
+<p>A link is just animation; if you decide two animation copies should actually
+be <em>the same element</em> (mirror, not motion), select one and click its <strong>grey
+&quot;S&quot;</strong> badge to <strong>promote</strong>. The one you click becomes the master — the others
+become identical to it. This is <strong>destructive</strong> (the copies&#39; separate
+positions and content are discarded in favour of the master&#39;s), so it asks for
+confirmation. There&#39;s no automatic reverse; sync is a deliberate step up from
+link, never a side effect of it.</p>
+<p>If the linked copies are <strong>notebooks with different recordings</strong>, promoting
+can&#39;t keep both — so instead of a plain confirm you get a <strong>chooser</strong>: each
+copy is shown with a one-line summary of its recording, and the one you pick
+becomes the master (its recording is kept; the others are discarded). This is
+how you &quot;sync notebooks&quot;: link them, then promote and choose which recording
+the unified notebook should carry.</p>
+<h2>Copy and paste</h2>
+<p>Copy an element (<code>Cmd/Ctrl+C</code>) and where you paste decides the relationship:</p>
+<ul>
+<li><strong>Paste on a different slide</strong> → the copy is <strong>linked</strong> to the original
+(animation), <em>unless</em> the original is part of a sync group, in which case the
+paste <strong>joins that sync group</strong> (another synced copy).</li>
+<li><strong>Paste on the same slide</strong> → a <strong>plain independent copy</strong>. (You can&#39;t
+animate between two things on one slide, so there&#39;s nothing to link.)</li>
+<li><strong><code>Cmd/Ctrl+D</code></strong> duplicates an element in place as an independent copy.</li>
+</ul>
+<h2>Why this design</h2>
+<p>Most &quot;same element across slides&quot; features conflate two genuinely different
+intentions — <em>repeat this</em> and <em>animate this</em> — into one confusing toggle.
+Splitting them keeps each predictable: a synced title never drifts out of
+place, and an animation never silently rewrites your content. The &quot;free to
+animate, promote to unify&quot; path lets you move between the two on purpose,
+without either one happening by accident.</p>
+<p>(For the under-the-hood model — one storage row + slide references, how it
+survives save/reopen — see the developer note <code>docs/sync-and-link.md</code>.)</p>
+</main></div>
+</body>
+</html>
