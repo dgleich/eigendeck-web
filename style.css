@@ -206,6 +206,28 @@ nav {
   pointer-events: none;
 }
 
+/* Embedded real exported deck (interactive) */
+.deck-frame { width: 100%; background: #000; }
+.deck-frame iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  display: block;
+}
+.deck-caption {
+  flex: 1;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.deck-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
 .slide-label {
   position: absolute;
   bottom: 0;
