@@ -51,15 +51,28 @@ default fonts, theme, text sizes, math macros), <strong>Slide</strong> (this sli
 and fonts), and <strong>Element</strong> (the selected element&#39;s properties). It&#39;s open by
 default; toggle it with <strong>View → Toggle Inspector</strong>.</li>
 </ul>
+<h3>Editing text — the floating format panel</h3>
+<p><strong>Double-click</strong> a text element to edit it. A small <strong>format panel</strong> floats just
+above it for as long as you&#39;re editing:</p>
+<p><img src="images/welcome/editor-text-format.png" alt="The floating text-format panel above a text element being edited"></p>
+<p>Left to right: <strong>B</strong> bold, <em>I</em> italic, <strong>S</strong> strikethrough, <strong>A</strong> text color (with
+a custom-palette dropdown), <strong>AA</strong> inline size, <strong>List</strong>, the alignment buttons,
+and a line-height toggle. These act on the <strong>selected run</strong> — so they&#39;re for
+<em>inline</em> formatting within an element, distinct from the element-wide controls in
+the Inspector on the right.</p>
+<blockquote>
+<p>Remember <a href="elements.html">one size per element</a>: there&#39;s no per-run <em>font</em> size —
+the <strong>AA</strong> affects inline emphasis, not the element&#39;s type-scale size.</p>
+</blockquote>
 <h3>Coloring text — and the math comes along</h3>
 <p>Inline math renders in the <em>current text color</em>, so coloring text colors its math
-too. The red <code>Φ</code> and the blue &quot;graph&quot; / &quot;directed adjacency matrix&quot; on this slide
-were done with <strong>inline spans</strong>: while editing the element, select the run
-(including any <code>$…$</code>) and pick a color from the <strong>text-editor format toolbar</strong> —
-the MathJax in that run picks up the color. <strong>Clear inline</strong> (in the Element
+too. The red <code>Φ</code> and the blue &quot;graph&quot; / &quot;directed adjacency matrix&quot; on the math
+slide were done with <strong>inline spans</strong>: while editing, select the run (including
+any <code>$…$</code>) and pick a color from the <strong>A</strong> button on that floating panel — the
+MathJax in that run picks up the color. <strong>Clear inline</strong> (in the Element
 inspector) strips those per-run colors again.</p>
 <p>To recolor the <strong>whole element</strong> uniformly instead, use the <strong>Text Color</strong> control
-in the Element inspector (shown above). The same panel carries <strong>Background</strong> (a
+in the Element inspector (shown earlier). That panel also carries <strong>Background</strong> (a
 panel behind the text), <strong>Effect</strong> (shadow / glow for legibility over busy
 slides), vertical alignment, rotation, and <strong>Position &amp; Size</strong>.</p>
 <hr>
@@ -101,6 +114,15 @@ sees the point made, <em>then</em> the demonstration.</p>
 <p>This is the heart of the deck — three interactive demos, each made in an LLM
 session and dropped onto a slide. See <strong><a href="building-demos-with-llms.html">Building demos with LLMs</a></strong>
 for exactly how these are produced.</p>
+<p>When you add a demo (Insert → Demo), Eigendeck scans its HTML for the <code>piece</code>
+names it defines and offers each as a separate, positionable element. With a demo
+piece selected, the <strong>Element</strong> inspector shows which piece it is and an <strong>Add
+Piece</strong> list of the demo&#39;s other pieces you can drop onto the slide:</p>
+<p><img src="images/welcome/editor-demo-piece.png" alt="A demo piece selected — the Element inspector shows the piece and Add Piece"></p>
+<p>That&#39;s how this slide carries the <code>probability</code> heatmap and the <code>controls</code> slider
+from one HTML file as two independently-placed elements. The source file is also
+<strong>watched</strong> — edit it (or have an LLM revise it) and the slide updates; see
+<a href="assets.html">watched assets</a>.</p>
 <p><img src="images/welcome/slide-08.png" alt="Slide 9 — Harper&#39;s electron simulation with a slider"></p>
 <p><strong>Slide 9 — Harper&#39;s electron.</strong> A Schrödinger simulation. The demo is split into
 a <code>probability</code> heatmap piece and a <code>controls</code> piece (the slider). They&#39;re
