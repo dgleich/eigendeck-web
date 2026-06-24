@@ -250,9 +250,318 @@ li { margin-bottom: 0.15em; list-style-position: inside; }
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-" style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="Click anywhere to drop a ball — it follows the gradient into a basin. A live HTML demo embedded in the slide." style="display:block;overflow:hidden;"><title>Click anywhere to drop a ball — it follows the gradient into a basin. A live HTML demo embedded in the slide.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">Click anywhere to drop a ball — it follows the gradient into a basin. A live HTML demo embedded in the slide.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">2</span></div></div>
+" style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="Click anywhere to drop a ball — it follows the gradient into a basin on a non-convex surface." style="display:block;overflow:hidden;"><title>Click anywhere to drop a ball — it follows the gradient into a basin on a non-convex surface.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">Click anywhere to drop a ball — it follows the gradient into a basin on a non-convex surface.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">2</span></div></div>
+<div class="slide" data-index="2" style="background:#ffffff;"><div style="position:absolute;left:60px;top:60px;width:1800px;height:120px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 120" preserveAspectRatio="none" width="1800" height="120" overflow="hidden" role="img" aria-label="Graph layout" style="display:block;overflow:hidden;"><title>Graph layout</title><foreignObject x="0" y="0" width="1800" height="120" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans', sans-serif;font-size:72px;font-weight:700;font-style:normal;color:#222222;line-height:1.3;padding:8px 12px;">Graph layout</div></div></foreignObject></svg></div><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;style id=&quot;eigendeck-demo-vars&quot;&gt;
+:root{
+  --eigendeck-bg: #ffffff;
+  --eigendeck-fg: #222222;
+  --eigendeck-heading: #222222;
+  --eigendeck-accent: #2563eb;
+  --eigendeck-muted: #888888;
+  --eigendeck-font: 'PT Sans';
+  --eigendeck-narrow: 'PT Sans Narrow';
+  --eigendeck-mono: 'Source Code Pro';
+  --eigendeck-base-size: 48px;
+}
+&lt;/style&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Graph layout&lt;/title&gt;
+&lt;!--
+  Showcase demo — force-directed graph drawing. Title-LESS, theme-aware, and
+  interaction-first: DRAG any node and the whole layout re-settles around it
+  (a Fruchterman–Reingold force simulation). The graph has three loosely-knit
+  communities, so the layout reveals its structure as it relaxes. Transparent
+  over the slide; colors track the deck theme.
+--&gt;
+&lt;style&gt;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden; position: relative;
+    background: var(--eigendeck-bg, #ffffff);
+    color: var(--eigendeck-fg, #222222);
+    font-family: var(--eigendeck-font, 'PT Sans'), system-ui, sans-serif;
+    font-size: var(--eigendeck-base-size, 22px);
+  }
+  #gl { width: 100%; height: 100%; display: block; cursor: grab; }
+  #gl.grabbing { cursor: grabbing; }
+  .gl-hint {
+    position: absolute; left: 50%; top: 7%; transform: translateX(-50%);
+    font-size: 0.7em; color: var(--eigendeck-muted, #888);
+    background: color-mix(in srgb, var(--eigendeck-bg, #fff) 70%, transparent);
+    padding: 0.2em 0.7em; border-radius: 1em; pointer-events: none;
+    transition: opacity 0.4s; user-select: none;
+  }
+  .gl-hint.gone { opacity: 0; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;canvas id=&quot;gl&quot;&gt;&lt;/canvas&gt;
+  &lt;div class=&quot;gl-hint&quot; id=&quot;gl-hint&quot;&gt;drag a node&lt;/div&gt;
+&lt;script&gt;
+(function () {
+  'use strict';
+  function tv(n, fb) { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || fb; } catch (e) { return fb; } }
+  var cv = document.getElementById('gl'), ctx = cv.getContext('2d'), hint = document.getElementById('gl-hint');
+
+  // Three communities; dense within, sparse across → visible structure.
+  var COMM = [10, 9, 9], COMM_COL = ['accent', '#f97316', '#10b981'];
+  var nodes = [], edges = [], comm = [];
+  (function build() {
+    var id = 0;
+    for (var c = 0; c &lt; COMM.length; c++) for (var k = 0; k &lt; COMM[c]; k++) { comm[id] = c; nodes.push({ x: 0, y: 0, vx: 0, vy: 0, fixed: false }); id++; }
+    var n = nodes.length;
+    function add(a, b) { if (a !== b &amp;&amp; !edges.some(function (e) { return (e.a === a &amp;&amp; e.b === b) || (e.a === b &amp;&amp; e.b === a); })) edges.push({ a: a, b: b }); }
+    // intra-community: connect each to ~2 neighbors in its community
+    var base = 0;
+    for (var c2 = 0; c2 &lt; COMM.length; c2++) {
+      for (var i = 0; i &lt; COMM[c2]; i++) { var u = base + i; add(u, base + (i + 1) % COMM[c2]); add(u, base + (i + 2) % COMM[c2]); }
+      base += COMM[c2];
+    }
+    // a few cross-community bridges
+    add(2, 12); add(7, 20); add(15, 25); add(4, 23);
+  })();
+
+  var W = 0, H = 0, dpr = 1, S = 1, temp = 1, K = 1, running = true, drag = null, settled = false;
+
+  function resize() {
+    var r = cv.getBoundingClientRect(); dpr = window.devicePixelRatio || 1;
+    var nW = Math.max(1, Math.round(r.width * dpr)), nH = Math.max(1, Math.round(r.height * dpr));
+    if (W &amp;&amp; nW) { var sx = nW / W, sy = nH / H; nodes.forEach(function (p) { p.x *= sx; p.y *= sy; }); }
+    W = nW; H = nH; cv.width = W; cv.height = H; S = Math.min(W, H);
+    K = 0.62 * Math.sqrt((W * H) / nodes.length);  // ideal edge length
+  }
+
+  function seed() {
+    var cx = W / 2, cy = H / 2, R = S * 0.32;
+    nodes.forEach(function (p, i) {
+      var a = (i / nodes.length) * Math.PI * 2 + comm[i];
+      p.x = cx + Math.cos(a) * R * (0.5 + 0.5 * ((i * 13) % 7) / 7);
+      p.y = cy + Math.sin(a) * R * (0.5 + 0.5 * ((i * 7) % 5) / 5);
+    });
+    temp = S * 0.12;
+  }
+
+  function stepFR() {
+    var n = nodes.length, dispx = new Float64Array(n), dispy = new Float64Array(n);
+    // repulsion (all pairs)
+    for (var i = 0; i &lt; n; i++) for (var j = i + 1; j &lt; n; j++) {
+      var dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y, d = Math.hypot(dx, dy) || 0.01;
+      var f = (K * K) / d, ux = dx / d, uy = dy / d;
+      dispx[i] += ux * f; dispy[i] += uy * f; dispx[j] -= ux * f; dispy[j] -= uy * f;
+    }
+    // attraction (edges)
+    for (var e = 0; e &lt; edges.length; e++) {
+      var a = edges[e].a, b = edges[e].b, dx2 = nodes[a].x - nodes[b].x, dy2 = nodes[a].y - nodes[b].y, d2 = Math.hypot(dx2, dy2) || 0.01;
+      var fa = (d2 * d2) / K, ux2 = dx2 / d2, uy2 = dy2 / d2;
+      dispx[a] -= ux2 * fa; dispy[a] -= uy2 * fa; dispx[b] += ux2 * fa; dispy[b] += uy2 * fa;
+    }
+    var cx = W / 2, cy = H / 2;
+    for (var p = 0; p &lt; n; p++) {
+      var nd = nodes[p];
+      if (nd.fixed) continue;
+      // mild centering
+      dispx[p] += (cx - nd.x) * 0.012; dispy[p] += (cy - nd.y) * 0.012;
+      var dl = Math.hypot(dispx[p], dispy[p]) || 0.01, lim = Math.min(dl, temp);
+      nd.x += dispx[p] / dl * lim; nd.y += dispy[p] / dl * lim;
+      nd.x = Math.max(S * 0.04, Math.min(W - S * 0.04, nd.x));
+      nd.y = Math.max(S * 0.04, Math.min(H - S * 0.04, nd.y));
+    }
+    temp = Math.max(S * 0.002, temp * 0.985);
+  }
+
+  function draw() {
+    var fg = tv('--eigendeck-fg', '#222'), bg = tv('--eigendeck-bg', '#fff'), acc = tv('--eigendeck-accent', '#2563eb');
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = fg; ctx.globalAlpha = 0.22; ctx.lineWidth = 1.4 * dpr;
+    for (var e = 0; e &lt; edges.length; e++) { var A = nodes[edges[e].a], B = nodes[edges[e].b]; ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    var rad = Math.max(4, S * 0.013);
+    for (var i = 0; i &lt; nodes.length; i++) {
+      var col = COMM_COL[comm[i]] === 'accent' ? acc : COMM_COL[comm[i]];
+      ctx.beginPath(); ctx.arc(nodes[i].x, nodes[i].y, rad, 0, 6.283);
+      ctx.fillStyle = col; ctx.fill();
+      ctx.lineWidth = 1.5 * dpr; ctx.strokeStyle = bg; ctx.stroke();
+    }
+  }
+
+  function frame() {
+    if (running) {
+      if (!settled || drag != null) stepFR();
+      draw();
+      if (temp &lt;= S * 0.0025 &amp;&amp; drag == null) { settled = true; running = false; }
+    }
+    if (running) requestAnimationFrame(frame);
+  }
+  function kick() { settled = false; if (!running) { running = true; requestAnimationFrame(frame); } }
+
+  function nodeAt(px, py) {
+    var rad = Math.max(4, S * 0.013) * 1.6;
+    for (var i = nodes.length - 1; i &gt;= 0; i--) if (Math.hypot(nodes[i].x - px, nodes[i].y - py) &lt; rad) return i;
+    return -1;
+  }
+  function evtPos(e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * dpr, (e.clientY - r.top) * dpr]; }
+
+  cv.addEventListener('pointerdown', function (e) {
+    var p = evtPos(e), i = nodeAt(p[0], p[1]); if (i &lt; 0) return;
+    drag = i; nodes[i].fixed = true; nodes[i].x = p[0]; nodes[i].y = p[1];
+    cv.classList.add('grabbing'); cv.setPointerCapture(e.pointerId);
+    hint.classList.add('gone'); temp = S * 0.06; kick();
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (drag == null) { cv.style.cursor = nodeAt.apply(null, evtPos(e)) &gt;= 0 ? 'grab' : 'grab'; return; }
+    var p = evtPos(e); nodes[drag].x = p[0]; nodes[drag].y = p[1]; temp = Math.max(temp, S * 0.04); kick();
+  });
+  function release(e) { if (drag != null) { nodes[drag].fixed = false; drag = null; cv.classList.remove('grabbing'); temp = S * 0.03; kick(); } }
+  cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
+  window.addEventListener('resize', function () { resize(); draw(); });
+
+  // Repaint on a live deck-theme change (we stop animating once settled).
+  var lastTheme = '';
+  setInterval(function () {
+    var sig = tv('--eigendeck-fg', '') + '|' + tv('--eigendeck-bg', '') + '|' + tv('--eigendeck-accent', '');
+    if (sig !== lastTheme) { lastTheme = sig; draw(); }
+  }, 400);
+
+  function start() { resize(); seed(); requestAnimationFrame(frame); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="Drag any node — the force-directed layout re-settles and reveals three communities." style="display:block;overflow:hidden;"><title>Drag any node — the force-directed layout re-settles and reveals three communities.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">Drag any node — the force-directed layout re-settles and reveals three communities.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">3</span></div></div>
+<div class="slide" data-index="3" style="background:#ffffff;"><div style="position:absolute;left:60px;top:60px;width:1800px;height:120px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 120" preserveAspectRatio="none" width="1800" height="120" overflow="hidden" role="img" aria-label="The wave equation" style="display:block;overflow:hidden;"><title>The wave equation</title><foreignObject x="0" y="0" width="1800" height="120" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans', sans-serif;font-size:72px;font-weight:700;font-style:normal;color:#222222;line-height:1.3;padding:8px 12px;">The wave equation</div></div></foreignObject></svg></div><iframe srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;style id=&quot;eigendeck-demo-vars&quot;&gt;
+:root{
+  --eigendeck-bg: #ffffff;
+  --eigendeck-fg: #222222;
+  --eigendeck-heading: #222222;
+  --eigendeck-accent: #2563eb;
+  --eigendeck-muted: #888888;
+  --eigendeck-font: 'PT Sans';
+  --eigendeck-narrow: 'PT Sans Narrow';
+  --eigendeck-mono: 'Source Code Pro';
+  --eigendeck-base-size: 48px;
+}
+&lt;/style&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;The wave equation&lt;/title&gt;
+&lt;!--
+  Showcase demo — the 1-D wave equation on a string. Title-LESS, theme-aware,
+  interaction-first: CLICK (or drag) anywhere to pluck the string; the
+  displacement splits into two travelling pulses that reflect off the fixed ends
+  (finite-difference solution of u_tt = c^2 u_xx, lightly damped). Transparent
+  over the slide; the curve tracks the deck theme.
+--&gt;
+&lt;style&gt;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    overflow: hidden; position: relative;
+    background: var(--eigendeck-bg, #ffffff);
+    color: var(--eigendeck-fg, #222222);
+    font-family: var(--eigendeck-font, 'PT Sans'), system-ui, sans-serif;
+    font-size: var(--eigendeck-base-size, 22px);
+  }
+  #wv { width: 100%; height: 100%; display: block; cursor: crosshair; }
+  .wv-hint {
+    position: absolute; left: 50%; top: 8%; transform: translateX(-50%);
+    font-size: 0.7em; color: var(--eigendeck-muted, #888);
+    background: color-mix(in srgb, var(--eigendeck-bg, #fff) 70%, transparent);
+    padding: 0.2em 0.7em; border-radius: 1em; pointer-events: none;
+    transition: opacity 0.4s; user-select: none;
+  }
+  .wv-hint.gone { opacity: 0; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;canvas id=&quot;wv&quot;&gt;&lt;/canvas&gt;
+  &lt;div class=&quot;wv-hint&quot; id=&quot;wv-hint&quot;&gt;click or drag to pluck the string&lt;/div&gt;
+&lt;script&gt;
+(function () {
+  'use strict';
+  function tv(n, fb) { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || fb; } catch (e) { return fb; } }
+  function hexToRgb(h) { var n = parseInt(h.replace('#', ''), 16); return h.length &gt;= 7 ? [(n &gt;&gt; 16) &amp; 255, (n &gt;&gt; 8) &amp; 255, n &amp; 255] : [37, 99, 235]; }
+  var cv = document.getElementById('wv'), ctx = cv.getContext('2d'), hint = document.getElementById('wv-hint');
+
+  var N = 240;                 // string samples
+  var u = new Float64Array(N), uPrev = new Float64Array(N), uNext = new Float64Array(N);
+  var C2 = 0.25, DAMP = 0.0009;   // Courant^2 (stable, &lt;1) + light velocity damping
+  var W = 0, H = 0, dpr = 1, drag = false;
+
+  function resize() { var r = cv.getBoundingClientRect(); dpr = window.devicePixelRatio || 1; W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr)); cv.width = W; cv.height = H; }
+
+  function step() {
+    for (var i = 1; i &lt; N - 1; i++) {
+      var lap = u[i - 1] - 2 * u[i] + u[i + 1];
+      var v = u[i] - uPrev[i];                 // velocity
+      uNext[i] = u[i] + v + C2 * lap - DAMP * v;
+    }
+    uNext[0] = 0; uNext[N - 1] = 0;            // fixed ends
+    var t = uPrev; uPrev = u; u = uNext; uNext = t;
+  }
+
+  function energy() { var e = 0; for (var i = 1; i &lt; N - 1; i++) { var v = u[i] - uPrev[i]; e += v * v + 0.25 * (u[i + 1] - u[i]) * (u[i + 1] - u[i]); } return e; }
+
+  function draw() {
+    var fg = tv('--eigendeck-fg', '#222'), acc = tv('--eigendeck-accent', '#2563eb'), rgb = hexToRgb(acc);
+    var midY = H / 2, amp = H * 0.32;
+    ctx.clearRect(0, 0, W, H);
+    // baseline
+    ctx.strokeStyle = fg; ctx.globalAlpha = 0.15; ctx.lineWidth = 1 * dpr;
+    ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(W, midY); ctx.stroke(); ctx.globalAlpha = 1;
+    // soft fill under the curve
+    var grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0.18)');
+    grad.addColorStop(1, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',0)');
+    ctx.beginPath(); ctx.moveTo(0, midY);
+    for (var i = 0; i &lt; N; i++) ctx.lineTo(i / (N - 1) * W, midY - u[i] * amp);
+    ctx.lineTo(W, midY); ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+    // the string
+    ctx.strokeStyle = acc; ctx.lineWidth = 2.6 * dpr; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (var j = 0; j &lt; N; j++) { var x = j / (N - 1) * W, y = midY - u[j] * amp; j === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+
+  function pluck(px, sign) {
+    var c = Math.round(px / W * (N - 1)), wdt = 10, A = 0.55 * (sign || 1);
+    for (var i = Math.max(1, c - wdt * 3); i &lt; Math.min(N - 1, c + wdt * 3); i++) {
+      var g = A * Math.exp(-((i - c) * (i - c)) / (2 * wdt * wdt));
+      u[i] += g; uPrev[i] += g;                // equal → zero initial velocity → splits into two pulses
+    }
+    hint.classList.add('gone');
+  }
+  function evtX(e) { var r = cv.getBoundingClientRect(); return (e.clientX - r.left) * dpr; }
+
+  cv.addEventListener('pointerdown', function (e) { drag = true; cv.setPointerCapture(e.pointerId); pluck(evtX(e), -1); });
+  cv.addEventListener('pointermove', function (e) { if (drag) pluck(evtX(e), -0.25); });
+  cv.addEventListener('pointerup', function () { drag = false; });
+  cv.addEventListener('pointercancel', function () { drag = false; });
+  window.addEventListener('resize', function () { resize(); draw(); });
+
+  // Repaint on a live theme change (the loop keeps running, so colors update too).
+  function frame() { step(); draw(); requestAnimationFrame(frame); }
+
+  function start() {
+    resize();
+    // a gentle initial pluck so it isn't a flat line
+    pluck(W * 0.32, 0.7); hint.classList.remove('gone');
+    requestAnimationFrame(frame);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+" style="position:absolute;left:60px;top:210px;width:1800px;height:780px;border:none;" sandbox="allow-scripts allow-same-origin"></iframe><div style="position:absolute;left:60px;top:1000px;width:1800px;height:40px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 40" preserveAspectRatio="none" width="1800" height="40" overflow="hidden" role="img" aria-label="Click or drag to pluck the string — the pulse splits into two waves and reflects off the ends." style="display:block;overflow:hidden;"><title>Click or drag to pluck the string — the pulse splits into two waves and reflects off the ends.</title><foreignObject x="0" y="0" width="1800" height="40" overflow="hidden"><div xmlns="http://www.w3.org/1999/xhtml" style="width:1800px;height:40px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;box-sizing:border-box;"><div style="width:100%;font-family:'PT Sans Narrow', sans-serif;font-size:24px;font-weight:normal;font-style:normal;color:#888888;line-height:1;padding:0px 0px;">Click or drag to pluck the string — the pulse splits into two waves and reflects off the ends.</div></div></foreignObject></svg></div><div class="slide-footer"><span class="slide-footer-meta">David F. Gleich · SIAM Annual Meeting 2026</span><span class="slide-footer-number">4</span></div></div>
 </div>
-<!-- eigendeck-source: eyJjb25maWciOnsiYXV0aG9yIjoiRGF2aWQgRi4gR2xlaWNoIiwiYmFja2dyb3VuZFRyYW5zaXRpb24iOiJmYWRlIiwiaGVpZ2h0IjoxMDgwLCJzaG93U2xpZGVOdW1iZXIiOnRydWUsInRyYW5zaXRpb24iOiJzbGlkZSIsInZlbnVlIjoiU0lBTSBBbm51YWwgTWVldGluZyAyMDI2Iiwid2lkdGgiOjE5MjB9LCJzbGlkZXMiOlt7ImVsZW1lbnRzIjpbeyJpZCI6InQtdGl0bGUiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IjxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlclwiPkVpZ2VuZGVjazwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjYwLCJ5Ijo0MDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjE4MH19LHsiaWQiOiJ0LXN1YiIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiYm9keSIsImh0bWwiOiI8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXJcIj5JbnRlcmFjdGl2ZSBzaG93LWFuZC10ZWxsIHByZXNlbnRhdGlvbnMg4oCUIHJlYWwgZGVtb3MsIGxpdmUgb24gdGhlIHNsaWRlLjwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjM2MCwieSI6NTkwLCJ3aWR0aCI6MTIwMCwiaGVpZ2h0IjoxMjB9fV0sImlkIjoiYzNkNGU1ZjYtMzMzMy00Y2NjLWEzMzMtMDAwMDAwMDAwMDAxIiwibm90ZXMiOiJUaXRsZSBzbGlkZS4gV2VsY29tZSB0aGUgYXVkaWVuY2UgYW5kIGludHJvZHVjZSB0aGUgdGFsayB0b3BpYy4ifSx7ImlkIjoiMGQyZmVmZmQtZTc2Ny00YjQ5LTlhMWYtZjBiOTFkZTg4NTBmIiwiZWxlbWVudHMiOlt7ImlkIjoiZC10aXRsZSIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiR3JhZGllbnQgZGVzY2VudCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5Ijo2MCwid2lkdGgiOjE4MDAsImhlaWdodCI6MTIwfX0seyJpZCI6ImQtZGVtbyIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjQ2MDA5NjI5LWI2OTktNDZjNy04MjIzLTJiOWYwMDMyZGI4ZCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYWRpZW50LWRlc2NlbnQuaHRtbCJ9LHsiaWQiOiJkLWNhcCIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgYW55d2hlcmUgdG8gZHJvcCBhIGJhbGwg4oCUIGl0IGZvbGxvd3MgdGhlIGdyYWRpZW50IGludG8gYSBiYXNpbi4gQSBsaXZlIEhUTUwgZGVtbyBlbWJlZGRlZCBpbiB0aGUgc2xpZGUuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9XSwidGhlbWUiOiJ3aGl0ZSIsInRpdGxlIjoiRWlnZW5kZWNrIOKAlCBTaG93Y2FzZSJ9 -->
+<!-- eigendeck-source: eyJjb25maWciOnsiYXV0aG9yIjoiRGF2aWQgRi4gR2xlaWNoIiwiYmFja2dyb3VuZFRyYW5zaXRpb24iOiJmYWRlIiwiaGVpZ2h0IjoxMDgwLCJzaG93U2xpZGVOdW1iZXIiOnRydWUsInRyYW5zaXRpb24iOiJzbGlkZSIsInZlbnVlIjoiU0lBTSBBbm51YWwgTWVldGluZyAyMDI2Iiwid2lkdGgiOjE5MjB9LCJzbGlkZXMiOlt7ImVsZW1lbnRzIjpbeyJpZCI6InQtdGl0bGUiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IjxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOmNlbnRlclwiPkVpZ2VuZGVjazwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjYwLCJ5Ijo0MDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjE4MH19LHsiaWQiOiJ0LXN1YiIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiYm9keSIsImh0bWwiOiI8ZGl2IHN0eWxlPVwidGV4dC1hbGlnbjpjZW50ZXJcIj5JbnRlcmFjdGl2ZSBzaG93LWFuZC10ZWxsIHByZXNlbnRhdGlvbnMg4oCUIHJlYWwgZGVtb3MsIGxpdmUgb24gdGhlIHNsaWRlLjwvZGl2PiIsInBvc2l0aW9uIjp7IngiOjM2MCwieSI6NTkwLCJ3aWR0aCI6MTIwMCwiaGVpZ2h0IjoxMjB9fV0sImlkIjoiYzNkNGU1ZjYtMzMzMy00Y2NjLWEzMzMtMDAwMDAwMDAwMDAxIiwibm90ZXMiOiJUaXRsZSBzbGlkZS4gV2VsY29tZSB0aGUgYXVkaWVuY2UgYW5kIGludHJvZHVjZSB0aGUgdGFsayB0b3BpYy4ifSx7ImlkIjoiZTJkOWM0Y2YtZDgyOC00YWQyLWI5N2ItOGJjM2MwOWZjODdmIiwiZWxlbWVudHMiOlt7ImlkIjoidDEiLCJ0eXBlIjoidGV4dCIsInByZXNldCI6InRpdGxlIiwiaHRtbCI6IkdyYWRpZW50IGRlc2NlbnQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMSIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjQ2MDA5NjI5LWI2OTktNDZjNy04MjIzLTJiOWYwMDMyZGI4ZCIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYWRpZW50LWRlc2NlbnQuaHRtbCJ9LHsiaWQiOiJjMSIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgYW55d2hlcmUgdG8gZHJvcCBhIGJhbGwg4oCUIGl0IGZvbGxvd3MgdGhlIGdyYWRpZW50IGludG8gYSBiYXNpbiBvbiBhIG5vbi1jb252ZXggc3VyZmFjZS4iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6MTAwMCwid2lkdGgiOjE4MDAsImhlaWdodCI6NDB9fV0sIm5vdGVzIjoiIn0seyJpZCI6IjgzMjRmYWY3LWI4NmUtNDJiNS1iYWI3LWRmY2NkM2E0YTE5OSIsImVsZW1lbnRzIjpbeyJpZCI6InQyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJ0aXRsZSIsImh0bWwiOiJHcmFwaCBsYXlvdXQiLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMiIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6ImQzMWVhMjE5LTRlN2EtNDkzOC1hMDRhLTc5MmFjOTBmOTI2YSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL2dyYXBoLWxheW91dC5odG1sIn0seyJpZCI6ImMyIiwidHlwZSI6InRleHQiLCJwcmVzZXQiOiJmb290bm90ZSIsImh0bWwiOiJEcmFnIGFueSBub2RlIOKAlCB0aGUgZm9yY2UtZGlyZWN0ZWQgbGF5b3V0IHJlLXNldHRsZXMgYW5kIHJldmVhbHMgdGhyZWUgY29tbXVuaXRpZXMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9LHsiaWQiOiI0YzRkMDQ2OC1hYzY0LTQ5MDItYWUyYi1kYmEwNjI3MTJkNGUiLCJlbGVtZW50cyI6W3siaWQiOiJ0MyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoidGl0bGUiLCJodG1sIjoiVGhlIHdhdmUgZXF1YXRpb24iLCJwb3NpdGlvbiI6eyJ4Ijo2MCwieSI6NjAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjEyMH19LHsiaWQiOiJkMyIsInR5cGUiOiJkZW1vIiwiYXNzZXRJZCI6IjhhMDQyODJkLTRlZWEtNDU3OC1hYmJjLTI0NjM0MjIzZjExOSIsInBvc2l0aW9uIjp7IngiOjYwLCJ5IjoyMTAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjc4MH0sInNyYyI6ImRlbW9zL3dhdmUtZXF1YXRpb24uaHRtbCJ9LHsiaWQiOiJjMyIsInR5cGUiOiJ0ZXh0IiwicHJlc2V0IjoiZm9vdG5vdGUiLCJodG1sIjoiQ2xpY2sgb3IgZHJhZyB0byBwbHVjayB0aGUgc3RyaW5nIOKAlCB0aGUgcHVsc2Ugc3BsaXRzIGludG8gdHdvIHdhdmVzIGFuZCByZWZsZWN0cyBvZmYgdGhlIGVuZHMuIiwicG9zaXRpb24iOnsieCI6NjAsInkiOjEwMDAsIndpZHRoIjoxODAwLCJoZWlnaHQiOjQwfX1dLCJub3RlcyI6IiJ9XSwidGhlbWUiOiJ3aGl0ZSIsInRpdGxlIjoiRWlnZW5kZWNrIOKAlCBTaG93Y2FzZSJ9 -->
 <div id="nav-bar">
   <button id="nb-prev">&lsaquo;</button>
   <span class="nav-pos"><span id="nb-cur">1</span> / <span id="nb-total"></span></span>
