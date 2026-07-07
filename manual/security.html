@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security: your files stay yours — Eigendeck manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/manual.css">
+</head>
+<body class="manual">
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="/logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/manual/">Manual</a>
+        <a href="/learning/">Learning</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul><div class="manual-nav-section">Trust & safety</div><ul><li><a class="active" href="security.html">Security & privacy</a></li></ul></nav><main class="manual-content"><h1>Security: your files stay yours</h1>
+<p>Eigendeck is careful with two things: the <strong>files on your computer</strong> (a deck can&#39;t
+read them behind your back) and what a deck&#39;s <strong>demos</strong> can do (they&#39;re boxed in, and
+they can&#39;t use the internet unless you allow it). This page covers both.</p>
+<h2>The rule</h2>
+<p>A <code>.eigendeck</code> is a file people email and share, like a PowerPoint or a Beamer
+<code>.tex</code>. Eigendeck treats a deck you <strong>received</strong> differently from one you <strong>made</strong>:</p>
+<ul>
+<li><strong>A deck can always <em>show</em> its content.</strong> Everything a deck carries is embedded
+inside it, so any deck opens fully and displays everything — nothing is hidden or
+blocked.</li>
+<li><strong>A deck can only <em>read live files off your computer</em> if you trust it.</strong> Linking a
+slide to a file on disk (so it updates when you edit that file) is a real feature —
+but a deck you received can&#39;t do it until you say so, and you can always see
+exactly which files it wants.</li>
+</ul>
+<p><strong>Decks you create are trusted. Decks you receive are not — until you decide.</strong></p>
+<h2>Why this exists</h2>
+<p>An image you paste or insert is <em>embedded</em> — a copy lives in the deck. But a deck
+can also <em>link</em> to a file that stays on disk and is re-read as it changes. That
+convenience is also a risk: a malicious deck could link to one of your private files
+(an SSH key, a credentials file), get your computer to read it in, and — because the
+file&#39;s contents are now inside the deck — carry it out the next time you share the
+deck. The person you send it to is the leak.</p>
+<p>So Eigendeck draws the line at the <strong>read</strong>: it simply won&#39;t read a file off your
+disk that you didn&#39;t approve. Get that right and there&#39;s nothing to leak, no matter
+who you send the deck to.</p>
+<p>Two consequences you&#39;ll feel:</p>
+<ul>
+<li><strong>If you never link external files, you&#39;ll never see any of this.</strong> Insert or
+paste your images (they embed) and there is nothing to watch and no prompts —
+ever. This is most people.</li>
+<li><strong>Eigendeck can only ever watch presentation files.</strong> Images, PDFs, videos,
+notebooks, and demos — the things a slide is made of. A deck can <em>never</em> get you
+to watch your SSH key or a credentials file; those aren&#39;t presentation content, so
+they&#39;re refused outright, before you&#39;re even asked.</li>
+</ul>
+<h2>How it respects your data</h2>
+<ul>
+<li><strong>Your source files are never modified.</strong> Watching reads them; it never writes
+them. (Notebooks work the same way — see <a href="notebooks.html">Notebooks</a>.)</li>
+<li><strong>Your content never leaves on its own.</strong> The only way your files or slides go
+out is you sharing the deck. (Interactive demos <em>can</em> use the internet — but only
+if you allow it and only for the sites they name; see <a href="#demos-and-the-internet">Demos and the
+internet</a> below.)</li>
+<li><strong>Exported HTML has no live links.</strong> Everything is baked in as static content, so
+an exported deck carries no connection back to your disk.</li>
+</ul>
+<h2>How it respects your time</h2>
+<p>Security you have to click through constantly is security you stop reading — so
+Eigendeck keeps out of your way:</p>
+<ul>
+<li><strong>No pop-ups when you open a deck.</strong> A received deck just opens and shows its
+content; live-watching is simply off until you choose to turn it on.</li>
+<li><strong>You approve once, and it sticks.</strong> When you trust a deck you review its linked
+files <em>once</em>; after that they just work.</li>
+<li><strong>Trust fades gently, not abruptly.</strong> A deck you keep using stays trusted. One you
+haven&#39;t opened in about a month asks you to re-confirm — a single click that
+restores everything, surfaced as a quiet notice, never a blocking dialog.</li>
+</ul>
+<h2>The Security Panel</h2>
+<p>When a deck links to external files, you manage them in the <strong>Security Panel</strong> — a
+window that lists, for the deck:</p>
+<ul>
+<li>every external file it links to, and <strong>where each one is used</strong> (which slide /
+element);</li>
+<li><strong>the real file each link points to</strong> (resolved in full, so a link can&#39;t disguise
+where it actually goes);</li>
+<li>whether each is <strong>watched</strong>, <strong>awaiting your approval</strong>, or <strong>refused</strong> (not a
+presentation file).</li>
+</ul>
+<p>There are two steps, and they&#39;re separate on purpose. First you <strong>Trust this deck</strong> —
+a one-time decision that unlocks watching and, by itself, reads nothing. Then you
+<strong>approve the files</strong> you actually want watched — one at a time, or a whole folder at
+once. (There&#39;s no single &quot;trust everything&quot; button; trusting the deck and choosing its
+files are deliberately two decisions.) Refused files are shown so you understand what a
+deck tried to reach, but they can&#39;t be approved. You can also see a single file&#39;s status
+right in its <strong>inspector</strong> when you select that element on the canvas.</p>
+<h2>Working with a deck someone sent you</h2>
+<ol>
+<li><strong>Open it.</strong> It displays completely — every image, demo, and notebook. Nothing is
+hidden.</li>
+<li><strong>If you want its linked files to stay live</strong> (update as they change on disk),
+open the Security Panel, click <strong>Trust this deck</strong>, then approve the files (or whole
+folders) you recognise. Until then it shows the embedded copies it came with.</li>
+<li><strong>If a link points somewhere you don&#39;t expect</strong>, don&#39;t approve it — the panel
+shows you the real destination precisely so you can catch that.</li>
+<li><strong>Later, if it asks you to re-confirm</strong> (about a month on), that&#39;s the trust
+timer; one click brings it back.</li>
+</ol>
+<p>If you&#39;d rather not deal with live files at all, turn off file-watching globally in
+Settings — then decks are always self-contained copies and none of this appears.</p>
+<h2>Demos and the internet</h2>
+<p>Some slides carry <strong>demos</strong> — small interactive widgets like charts, simulations,
+and graphs. Two things to know:</p>
+<ul>
+<li><strong>A demo can&#39;t touch your files or the rest of your computer.</strong> It runs boxed in
+(a sandbox), the same way a web page in your browser can&#39;t reach your files. This
+holds even for a deck you haven&#39;t trusted.</li>
+<li><strong>A demo can use the internet — but only if you allow it, and only for the sites
+it names.</strong> Some demos fetch live data or load a chart library from the web. A demo
+has to <em>declare</em> which sites it uses (and why); it can reach only those, and nothing
+else. A demo that declares nothing stays offline.</li>
+</ul>
+<p>You&#39;re in control in three places, from broad to specific:</p>
+<ul>
+<li><strong>Everywhere</strong> — Settings → Security has a master switch to turn demo internet off
+for every deck.</li>
+<li><strong>Per deck</strong> — a deck&#39;s Security window has an <strong>Internet</strong> tab with one switch to
+keep <em>this</em> deck&#39;s demos offline. Good for a deck from someone you don&#39;t fully trust.</li>
+<li><strong>Per demo</strong> — that same Internet tab lists each demo that goes online, the exact
+sites it uses, and what for — so you can switch off just the one you don&#39;t like.</li>
+</ul>
+<p>Turning the internet off doesn&#39;t break a demo; it just runs offline. It only means the
+demo can&#39;t fetch live data or &quot;phone home&quot; — for example, quietly recording when and
+where you open the deck. When something is switched off higher up, the controls below it
+grey out, so you can always see why a demo is offline.</p>
+<h2>Related</h2>
+<ul>
+<li><strong><a href="assets.html">Watched assets</a></strong> — how linking + watching works day to day.</li>
+<li><strong><a href="sync-and-link.html">Sync and link</a></strong> — relating elements across slides (a
+different meaning of &quot;link&quot;).</li>
+<li><strong><a href="notebooks.html">Notebooks</a></strong> — recording and editing without touching your source.</li>
+</ul>
+</main></div>
+  <footer class="llm-note">Content generated by an LLM with human direction.</footer>
+</body>
+</html>

@@ -21,7 +21,7 @@
       </div>
     </div>
   </nav>
-  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a class="active" href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul></nav><main class="manual-content"><h1>Building demos with LLMs</h1>
+  <div class="manual-layout"><nav class="manual-nav"><a class="manual-home" href="/">&larr; eigendeck.dev</a><div class="manual-nav-section">Start here</div><ul><li><a href="index.html">Overview</a></li><li><a href="philosophy.html">Philosophy</a></li><li><a href="building-a-presentation.html">Building a presentation</a></li><li><a class="active" href="building-demos-with-llms.html">Building demos with LLMs</a></li></ul><div class="manual-nav-section">Elements & features</div><ul><li><a href="elements.html">Elements</a></li><li><a href="styles-and-fonts.html">Styles and fonts</a></li><li><a href="text-sizes.html">Text sizes</a></li><li><a href="notebooks.html">Notebooks</a></li><li><a href="notebook-servers.html">Jupyter servers</a></li><li><a href="videos.html">Videos</a></li><li><a href="assets.html">Watched assets</a></li><li><a href="sync-and-link.html">Sync and link</a></li><li><a href="clipboard.html">Cut, copy, and paste</a></li></ul><div class="manual-nav-section">Trust & safety</div><ul><li><a href="security.html">Security & privacy</a></li></ul></nav><main class="manual-content"><h1>Building demos with LLMs</h1>
 <p>The interactive pieces in a talk — a force-directed graph you can drag, a
 Schrödinger simulation with a field-strength slider, a molecule viewer — are
 usually one-off visualizations. Writing each by hand is slow. An LLM (Claude,
@@ -31,9 +31,10 @@ drop that result straight onto a slide.</p>
 this way.</p>
 <h2>The shape of an Eigendeck demo</h2>
 <p>A demo is a <strong>single self-contained HTML file</strong>. It runs in a sandboxed iframe
-over the slide and can be split into <em>pieces</em> — separate viewports (a plot, a
-control panel, an info box) that you position independently on the slide and that
-talk to each other over <code>BroadcastChannel</code>. Eigendeck scans the HTML for the
+over the slide — isolated, so it can&#39;t touch the app or your files — and can be
+split into <em>pieces</em> — separate viewports (a plot, a control panel, an info box)
+that you position independently on the slide and that talk to each other over
+<code>BroadcastChannel</code>. Eigendeck scans the HTML for the
 piece names you reference and creates a positionable element for each.</p>
 <p>The full contract — the file template, the controller/piece/standalone roles,
 how export works, and the rules that keep a demo robust — is in
@@ -41,6 +42,30 @@ how export works, and the rules that keep a demo robust — is in
 also what you hand an LLM: it&#39;s installable from the app via <strong>File → Install LLM
 Tools…</strong>, which drops the authoring guide and a starter demo where an
 LLM/agent working in your project can read them.</p>
+<h2>Two things that make a demo silently fail</h2>
+<p>Both are enforced, and both show up as a <em>blank</em> demo rather than an error, so
+they&#39;re worth knowing up front (the full rules are in <code>DEMO_AUTHORING.md</code>):</p>
+<ul>
+<li><p><strong>The marker.</strong> A demo must begin with <code>&lt;!--eigendeck-demo-v1--&gt;</code> right after
+<code>&lt;!DOCTYPE html&gt;</code>, or Eigendeck won&#39;t recognize the file as a demo and won&#39;t
+mount it. (The starter file and the LLM guide already include it — keep it.)</p>
+</li>
+<li><p><strong>The internet is off by default.</strong> A demo can&#39;t reach the network unless it
+<strong>declares the hosts it needs</strong> in a small JSON manifest in its <code>&lt;head&gt;</code>. So if
+your demo loads a library from a CDN (D3, Plotly, topojson…) or fetches data,
+you must list that host, e.g.:</p>
+<pre><code class="language-html">&lt;script type=&quot;application/eigendeck-manifest+json&quot;&gt;
+{ &quot;network&quot;: [ { &quot;host&quot;: &quot;d3js.org&quot;, &quot;purpose&quot;: &quot;D3 visualization library&quot; } ] }
+&lt;/script&gt;
+</code></pre>
+<p>Without it the CDN <code>&lt;script&gt;</code>/<code>fetch</code> is blocked and the demo renders blank.
+Declaring a host also shows it (with its purpose) in the deck&#39;s Security →
+Internet panel, where the viewer can allow or block it. Prefer inlining a
+library when you can — a self-contained demo works even when internet is off.
+See the &quot;Internet access&quot; section of <code>DEMO_AUTHORING.md</code> for the exact rules
+(valid host formats, per-deck / global switches).</p>
+</li>
+</ul>
 <h2>A workflow that works</h2>
 <ol>
 <li><strong>Describe the demo to the LLM</strong>, and point it at <code>DEMO_AUTHORING.md</code> (or run
@@ -61,9 +86,10 @@ the slide reloads. See <a href="assets.html">watched assets</a>.</li>
 background shows through and the demo matches every theme for free.</li>
 <li><strong>Use the injected theme variables</strong> for any text/controls: <code>var(--eigendeck-fg)</code>,
 <code>--eigendeck-bg</code>, <code>--eigendeck-accent</code>, <code>--eigendeck-font</code>, etc. Eigendeck
-injects the deck&#39;s resolved fonts + colors into every demo, live. Control
-labels and canvas text should track these so they stay legible on light <em>and</em>
-dark slides.</li>
+splices the deck&#39;s resolved fonts + colors into every demo at mount; if you
+change the theme, the demo re-mounts with the new values. Control labels and
+canvas text should use these vars so they stay legible on light <em>and</em> dark
+slides.</li>
 </ul>
 <p>Both are covered in detail (with a worked example) in the &quot;Matching the deck&quot;
 section of <a href="https://github.com/dgleich/eigendeck/blob/main/DEMO_AUTHORING.md" target="_blank" rel="noopener"><code>DEMO_AUTHORING.md</code></a>.</p>
@@ -72,5 +98,6 @@ section of <a href="https://github.com/dgleich/eigendeck/blob/main/DEMO_AUTHORIN
 parameter from the URL hash or use the piece name — see the <code>gimmicks</code> example in
 <code>example-demos/</code> for a tiny demo whose displayed word is configurable.</p>
 </main></div>
+  <footer class="llm-note">Content generated by an LLM with human direction.</footer>
 </body>
 </html>

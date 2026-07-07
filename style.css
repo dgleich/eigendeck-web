@@ -447,3 +447,15 @@ footer a:hover {
   }
 
 }
+
+/* Disclosure that the site's written content was produced by an LLM (with human
+   direction). Shown on every page except the homepage — subtle, bottom of page. */
+.llm-note {
+  margin: 3rem auto 1.5rem;
+  padding: 0.75rem 1rem 0;
+  max-width: 42rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: #8a8a8a;
+  font-size: 0.8rem;
+  text-align: center;
+}
