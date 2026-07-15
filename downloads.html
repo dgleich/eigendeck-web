@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download Eigendeck</title>
+  <meta name="description" content="Download Eigendeck for macOS, Windows, or Linux — the latest release.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .dl-wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+    .dl-wrap h1 { font-size: 2.4rem; margin: 0 0 .35rem; }
+    .dl-ver { color: var(--text-muted); margin: 0 0 .4rem; }
+    .dl-datenote { color: var(--text-muted); font-size: .9rem; margin: 0 0 2rem; }
+    .dl-ver .beta { display: inline-block; margin-left: .5rem; padding: .1rem .5rem; font-size: .75rem;
+      border: 1px solid var(--border); border-radius: 999px; color: var(--accent-hover); vertical-align: middle; }
+    .dl-primary { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+    .dl-primary .os-name { font-size: 1.15rem; font-weight: 700; }
+    .dl-primary .os-sub { color: var(--text-muted); font-size: .9rem; margin-top: .15rem; }
+    .dl-primary .grow { flex: 1 1 auto; min-width: 140px; }
+    .dl-big { font-size: 1.05rem; padding: .8rem 1.6rem; }
+    .dl-alt-arch { display: block; margin-top: .5rem; font-size: .85rem; color: var(--text-muted); }
+    .dl-others { margin-top: 2.5rem; }
+    .dl-others h2 { font-size: 1rem; color: var(--text-muted); font-weight: 400; text-transform: uppercase;
+      letter-spacing: .08em; margin: 0 0 1rem; }
+    .dl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .75rem; }
+    .dl-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; }
+    .dl-card .plat { font-weight: 700; margin-bottom: .5rem; }
+    .dl-card a { display: block; color: var(--accent-hover); text-decoration: none; padding: .15rem 0; font-size: .92rem; }
+    .dl-card a:hover { color: var(--text); }
+    .dl-foot-note { margin-top: 2rem; color: var(--text-muted); font-size: .9rem; }
+    .dl-foot-note a { color: var(--accent-hover); }
+    .dl-error { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo"><img src="logo-icon.svg" alt="" class="logo-icon">Eigendeck</a>
+      <div class="nav-links">
+        <a href="/#features">Features</a>
+        <a href="/learning/">Learning</a>
+        <a href="/manual/">Manual</a>
+        <a href="/downloads.html">Download</a>
+        <a href="https://github.com/dgleich/eigendeck" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dl-wrap">
+    <h1>Download Eigendeck</h1>
+    <p class="dl-ver" id="dl-ver">Finding the latest release…</p>
+    <p class="dl-datenote" id="dl-datenote"></p>
+
+    <div id="dl-primary" class="dl-primary" style="display:none">
+      <div class="grow">
+        <div class="os-name" id="dl-os-name">—</div>
+        <div class="os-sub" id="dl-os-sub"></div>
+      </div>
+      <div>
+        <a id="dl-primary-btn" class="btn btn-primary dl-big" href="#">Download</a>
+        <a id="dl-alt-arch" class="dl-alt-arch" href="#" style="display:none"></a>
+      </div>
+    </div>
+
+    <div id="dl-error" class="dl-error" style="display:none">
+      <p>Couldn’t load the release list just now. You can always grab the latest build directly:</p>
+      <p><a class="btn btn-primary" href="https://github.com/dgleich/eigendeck/releases" target="_blank" rel="noopener">All releases on GitHub</a></p>
+    </div>
+
+    <div class="dl-others" id="dl-others" style="display:none">
+      <h2>All platforms</h2>
+      <div class="dl-grid" id="dl-grid"></div>
+    </div>
+
+    <p class="dl-foot-note">
+      Every download is code-signed and notarized on macOS. Prefer to build it yourself?
+      <code>git clone https://github.com/dgleich/eigendeck &amp;&amp; npm install &amp;&amp; npm run tauri build</code>.
+      Or see <a href="https://github.com/dgleich/eigendeck/releases" target="_blank" rel="noopener">all releases</a>.
+    </p>
+  </div>
+
+  <footer>
+    <p>Eigendeck is open source. Built by <a href="https://dgleich.com" target="_blank" rel="noopener">David Gleich</a>.</p>
+  </footer>
+
+  <script>
+  (function () {
+    var REPO = 'dgleich/eigendeck';
+
+    function detectOS() {
+      var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
+      var ua = navigator.userAgent || '';
+      if (/mac/i.test(p) || /Mac OS X/i.test(ua)) return 'mac';
+      if (/win/i.test(p) || /Windows/i.test(ua)) return 'windows';
+      if (/linux|x11|ubuntu|fedora/i.test(p + ' ' + ua)) return 'linux';
+      return 'other';
+    }
+    // Match a release asset by filename suffix.
+    function pick(assets, re) { for (var i = 0; i < assets.length; i++) if (re.test(assets[i].name)) return assets[i]; return null; }
+
+    function labelForOS(os) {
+      return os === 'mac' ? 'macOS' : os === 'windows' ? 'Windows' : os === 'linux' ? 'Linux' : 'your computer';
+    }
+
+    async function macArchIsArm() {
+      // Best-effort. Safari (most Mac users) can't tell us, so we default to Apple
+      // Silicon and always offer an Intel link. Chromium exposes it via UA-CH.
+      try {
+        if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+          var v = await navigator.userAgentData.getHighEntropyValues(['architecture']);
+          if (v && v.architecture) return v.architecture !== 'x86';
+        }
+      } catch (e) {}
+      return true; // default: Apple Silicon
+    }
+
+    function render(rel) {
+      var assets = rel.assets || [];
+      var os = detectOS();
+
+      // Per-platform asset picks (Tauri bundle names).
+      var macArm = pick(assets, /aarch64\.dmg$/i);
+      var macIntel = pick(assets, /x64\.dmg$/i);
+      var win = pick(assets, /-setup\.exe$/i) || pick(assets, /\.msi$/i);
+      var appimage = pick(assets, /\.AppImage$/i);
+      var deb = pick(assets, /\.deb$/i);
+      var rpm = pick(assets, /\.rpm$/i);
+
+      // Version line.
+      var ver = document.getElementById('dl-ver');
+      ver.textContent = 'Eigendeck ' + (rel.tag_name || rel.name || '');
+      if (rel.prerelease) {
+        var b = document.createElement('span'); b.className = 'beta'; b.textContent = 'beta'; ver.appendChild(b);
+      }
+      // Version numbers are just dates (CalVer year.month.day) — spell that out so a
+      // non-technical visitor knows newer = bigger, and show the actual date.
+      var human = '';
+      try { human = new Date(rel.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) {}
+      document.getElementById('dl-datenote').textContent =
+        'Version numbers are just dates (year.month.day), so a bigger number is newer' +
+        (human ? ' — this one is from ' + human + '.' : '.');
+
+      // Primary (detected OS) card.
+      var prim = document.getElementById('dl-primary');
+      var btn = document.getElementById('dl-primary-btn');
+      var alt = document.getElementById('dl-alt-arch');
+      var main = null, sub = '';
+      if (os === 'mac') { main = macArm || macIntel; sub = 'Universal installer (.dmg)'; }
+      else if (os === 'windows') { main = win; sub = 'Installer (.exe)'; }
+      else if (os === 'linux') { main = appimage || deb; sub = appimage ? 'Portable (.AppImage)' : 'Debian package (.deb)'; }
+
+      if (main) {
+        document.getElementById('dl-os-name').textContent = 'Download for ' + labelForOS(os);
+        document.getElementById('dl-os-sub').textContent = sub;
+        btn.href = main.browser_download_url;
+        prim.style.display = 'flex';
+        if (os === 'mac') {
+          macArchIsArm().then(function (arm) {
+            var primary = arm ? macArm : macIntel;
+            var other = arm ? macIntel : macArm;
+            if (primary) btn.href = primary.browser_download_url;
+            document.getElementById('dl-os-sub').textContent = (arm ? 'Apple Silicon (M-series)' : 'Intel') + ' · .dmg';
+            if (other) {
+              alt.style.display = 'block';
+              alt.textContent = arm ? 'Have an Intel Mac? Download that instead.' : 'Have an Apple Silicon Mac? Download that instead.';
+              alt.href = other.browser_download_url;
+            }
+          });
+        }
+      }
+
+      // All-platforms grid.
+      var grid = document.getElementById('dl-grid');
+      function card(title, links) {
+        var have = links.filter(function (l) { return l.asset; });
+        if (!have.length) return;
+        var c = document.createElement('div'); c.className = 'dl-card';
+        var h = document.createElement('div'); h.className = 'plat'; h.textContent = title; c.appendChild(h);
+        have.forEach(function (l) {
+          var a = document.createElement('a'); a.href = l.asset.browser_download_url; a.textContent = l.label; c.appendChild(a);
+        });
+        grid.appendChild(c);
+      }
+      card('macOS', [{ label: 'Apple Silicon (.dmg)', asset: macArm }, { label: 'Intel (.dmg)', asset: macIntel }]);
+      card('Windows', [{ label: 'Installer (.exe)', asset: pick(assets, /-setup\.exe$/i) }, { label: 'MSI (.msi)', asset: pick(assets, /\.msi$/i) }]);
+      card('Linux', [{ label: 'AppImage', asset: appimage }, { label: 'Debian (.deb)', asset: deb }, { label: 'RPM (.rpm)', asset: rpm }]);
+      if (grid.children.length) document.getElementById('dl-others').style.display = 'block';
+    }
+
+    async function load() {
+      try {
+        var res = await fetch('https://api.github.com/repos/' + REPO + '/releases?per_page=15', { headers: { 'Accept': 'application/vnd.github+json' } });
+        if (!res.ok) throw new Error('http ' + res.status);
+        var rels = (await res.json()).filter(function (r) { return !r.draft; });
+        // Prefer the newest STABLE release; if there are none yet (all pre-release),
+        // fall back to the newest build so the page is never a dead end.
+        var rel = rels.filter(function (r) { return !r.prerelease; })[0] || rels[0];
+        if (!rel) throw new Error('no releases');
+        render(rel);
+      } catch (e) {
+        document.getElementById('dl-ver').style.display = 'none';
+        document.getElementById('dl-error').style.display = 'block';
+      }
+    }
+    load();
+  })();
+  </script>
+
+</body>
+</html>
