@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cut, copy, and paste — Eigendeck manual</title>
+  <link rel="icon" href="/logo-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
@@ -31,6 +32,9 @@ browser, a screenshot) → inserted as an image element. Eigendeck reads the
 richest form available, preferring <strong>vector (SVG) → PDF → PNG/JPEG</strong>, so a
 chart copied from Office comes in as crisp vector art rather than a bitmap when
 the app offers both.</li>
+<li><strong>A file copied in Finder / Explorer / Files</strong> (select an image, SVG, or PDF
+file in the file manager and copy it) → inserted from the file&#39;s bytes, exactly
+like dragging the file onto the slide.</li>
 <li><strong>Rich HTML</strong> with no image on the clipboard — a <strong>Google Sheets / Excel
 range, a Google Docs or Word selection, a chunk of a web page</strong> → Eigendeck
 renders that HTML <strong>in your deck&#39;s font</strong> and drops it in as a <strong>picture</strong>
@@ -41,8 +45,7 @@ text box instead.</li>
 <p><strong>Pasting into a text box</strong> (double-click to edit first) inserts <strong>text</strong>.
 Formatting from outside Eigendeck is dropped — you get clean plain text in the
 box&#39;s own style — <em>unless</em> the clipboard came from Eigendeck itself (copying a
-selection inside another text box keeps its bold/italic/super-/subscript/color).
-Use <strong>Edit → Paste without Formatting</strong> to force plain text even then.</p>
+selection inside another text box keeps its bold/italic/super-/subscript/color).</p>
 <p>Copying and pasting <strong>whole elements</strong> (select, ⌘C, ⌘V) duplicates them; across
 slides this is also how you set up animations — see
 <a href="sync-and-link.html">Sync and link</a>.</p>
@@ -82,7 +85,7 @@ for a borderless look (mind the Sheets default-gridline caveat above).</li>
 <li><strong>Updating a pasted table:</strong> it&#39;s a snapshot, so re-copy from the source and
 paste again to replace it.</li>
 <li><strong>Just the text, no styling:</strong> paste into a text box instead of onto the
-canvas, or use <strong>Paste without Formatting</strong>.</li>
+canvas, or use <strong>Paste as… → Text</strong>.</li>
 </ul>
 </main></div>
 </body>

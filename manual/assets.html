@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Files, watching, and auto-reload — Eigendeck manual</title>
+  <link rel="icon" href="/logo-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Mono&display=swap" rel="stylesheet">
@@ -70,6 +71,26 @@ asset keeps its source link, so <strong>Reload from disk</strong> still works (a
 your in-deck cell edits, taking the file as-is).</p>
 <p>(For <strong>videos</strong>, both the movie file <em>and</em> an attached <strong>captions <code>.vtt</code></strong> are
 watched independently — see <a href="videos.html">Videos</a>.)</p>
+<h2>Snapshots for export and print</h2>
+<p>Live elements — demos, notebooks, and videos — only render while their slide is
+on screen, so a deck you open and export <em>without</em> clicking through every slide
+can have gaps (placeholder boxes) in its exports, the print view, and the sidebar
+thumbnails. Two <strong>File menu</strong> commands bake the live elements to static images
+(&quot;snapshots&quot;) that the deck keeps:</p>
+<ul>
+<li><strong>Generate Missing Snapshots</strong> — captures only the live elements that don&#39;t
+have a current snapshot yet. Run it before exporting a deck you haven&#39;t clicked
+all the way through. It&#39;s idempotent — a second run with nothing missing does
+nothing.</li>
+<li><strong>Refresh All Snapshots</strong> — re-captures every live element (use it after you
+change a demo/notebook or switch the deck theme).</li>
+</ul>
+<p>Both step through the slides behind a progress overlay and then restore your
+place. The three export commands — <strong>File → Export to HTML</strong>, <strong>Export Printable
+HTML</strong> (one slide per page, for the browser&#39;s Print-to-PDF), and <strong>Export to PDF
+(Screenshots)</strong> — plus the sidebar thumbnails all read these snapshots, so a
+snapshotted deck exports with real demo/notebook/video images instead of
+placeholders.</p>
 <h2>Why</h2>
 <p>Embedding makes decks portable; watching makes them live — most tools force you to
 pick one. Eigendeck does both because the common case is &quot;my plots come from code
